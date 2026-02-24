@@ -92,17 +92,18 @@ st.markdown("""
 if 'launched' not in st.session_state:
     st.session_state.launched = False
 
-# --- 2. ACCUEIL (INTERFACE WEN MOON) ---
+# --- 2. ACCUEIL (INTERFACE WEN MOON - TAILLES AJUSTÉES) ---
 if not st.session_state.launched:
     
     wen_b64 = get_b64('Screenshot_20260216_163106_Discord.jpg')
     
+    # MODIFICATION ICI : Tailles réduites pour rentrer sur l'écran
     st.markdown(f"""
     <br>
-    <div style='display:flex; justify-content:center; align-items:center; gap:50px; margin-bottom: 40px;'>
-        <img src='data:image/jpeg;base64,{wen_b64}' style='height:125px; animation: neon-blink-img 1.5s infinite;'>
-        <h1 style='font-size: 100px; margin: 0; animation: neon-blink-text 1.5s infinite; text-align: center; white-space: nowrap;'>TERMINAL GME</h1>
-        <div style='font-size: 125px; animation: rocket-pulse 1s ease-in-out infinite;'>🚀</div>
+    <div style='display:flex; justify-content:center; align-items:center; gap:25px; margin-bottom: 40px;'>
+        <img src='data:image/jpeg;base64,{wen_b64}' style='height:80px; animation: neon-blink-img 1.5s infinite;'>
+        <h1 style='font-size: 70px; margin: 0; animation: neon-blink-text 1.5s infinite; text-align: center; white-space: nowrap;'>TERMINAL GME</h1>
+        <div style='font-size: 80px; animation: rocket-pulse 1s ease-in-out infinite;'>🚀</div>
     </div>
     """, unsafe_allow_html=True)
     
