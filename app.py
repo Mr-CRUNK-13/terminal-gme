@@ -19,17 +19,15 @@ st.markdown("""
         box-shadow: 0px 0px 20px #00FF00; margin-top: 30px;
     }
     
-    /* Animation Image WEN Moon (Clignote en rouge) */
     @keyframes flash {
         0% { opacity: 1; transform: scale(1); }
         50% { opacity: 0.4; transform: scale(1.05); box-shadow: 0 0 30px #FF3D00; }
         100% { opacity: 1; transform: scale(1); }
     }
     
-    /* NOUVELLE Animation Fusée (Pulsation de décollage) */
     @keyframes rocket-pulse {
         0% { transform: translateY(0px) scale(1); }
-        50% { transform: translateY(-20px) scale(1.15); } /* Monte et grossit fortement */
+        50% { transform: translateY(-20px) scale(1.15); } 
         100% { transform: translateY(0px) scale(1); }
     }
 </style>
@@ -69,22 +67,24 @@ if not st.session_state.launched:
 
 # --- 3. TERMINAL ---
 else:
+    # NOUVEAU MOTEUR UNIVERSEL : Il accepte n'importe quel symbole boursier !
     @st.cache_data(ttl=60)
-    def get_live_data():
+    def get_live_data(ticker_symbol):
         try:
-            ticker = yf.Ticker("GME")
+            ticker = yf.Ticker(ticker_symbol)
             hist = ticker.history(period="1d", interval="2m", prepost=True)
             if not hist.empty:
-                current_gme_price = float(hist['Close'].iloc[-1])
+                current_price = float(hist['Close'].iloc[-1])
                 prev_close = float(ticker.fast_info['previousClose'])
             else:
-                current_gme_price = float(ticker.fast_info['lastPrice'])
+                current_price = float(ticker.fast_info['lastPrice'])
                 prev_close = float(ticker.fast_info['previousClose'])
                 
-            gme_change_pct = ((current_gme_price - prev_close) / prev_close) * 100 if prev_close > 0 else 0.0
-            return current_gme_price, gme_change_pct, hist['Close']
+            change_pct = ((current_price - prev_close) / prev_close) * 100 if prev_close > 0 else 0.0
+            return current_price, change_pct, hist['Close']
         except Exception:
-            return 25.00, 0.0, pd.Series()
+            # En cas d'erreur de Yahoo Finance sur le symbole
+            return 0.0, 0.0, pd.Series()
             
     def get_image_base64(image_path):
         try:
@@ -92,49 +92,87 @@ else:
                 return base64.b64encode(img_file.read()).decode()
         except Exception:
             return ""
-    
-    current_gme_price, gme_change_pct, chart_data = get_live_data()
-    ticker_color = "#00FF00" if gme_change_pct >= 0 else "#FF3D00"
-    sign = "+" if gme_change_pct >= 0 else ""
-    
-    # MOTEUR DYNAMIQUE SIMPLIFIÉ ET ROBUSTE
-    abs_pct = abs(gme_change_pct)
-    # Taille de base 100px, augmente avec la volatilité
-    icon_size = min(100 + (abs_pct * 10), 200)
-    # Vitesse : plus le % est haut, plus anim_speed est petit (donc rapide)
-    anim_speed = max(1.5 - (abs_pct * 0.1), 0.4)
+            
+    # --- RÉCUPÉRATION DES DONNÉES DES 2 ACTIFS ---
+    gme_price, gme_pct, gme_chart = get_live_data("GME")
+    # Note : Le symbole des warrants varie souvent sur YF (GME-WT, GMEW, etc.). On tente GME-WT.
+    wt_price, wt_pct, wt_chart = get_live_data("GME-WT") 
     
     tab1, tab2, tab3, tab4, tab5 = st.tabs(["📊 GME", "📜 WARRANTS", "🇪🇺 EU", "🇺🇸 US", "📋 DATA"])
     
+    # ==========================================
+    # ONGLETS 1 : GME (L'Original)
+    # ==========================================
     with tab1:
-        # Affichage propre sur une seule ligne de code
-        if gme_change_pct >= 0:
-            # Une seule fusée qui pulse puissamment
-            icon_html = f"<div style='font-size: {icon_size}px; animation: rocket-pulse {anim_speed}s ease-in-out infinite; line-height: 1; text-shadow: 0 0 30px #00FF00;'>🚀</div>"
+        gme_color = "#00FF00" if gme_pct >= 0 else "#FF3D00"
+        gme_sign = "+" if gme_pct >= 0 else ""
+        gme_abs_pct = abs(gme_pct)
+        gme_icon_size = min(100 + (gme_abs_pct * 10), 200)
+        gme_anim_speed = max(1.5 - (gme_abs_pct * 0.1), 0.4)
+        
+        if gme_pct >= 0:
+            icon_html = f"<div style='font-size: {gme_icon_size}px; animation: rocket-pulse {gme_anim_speed}s ease-in-out infinite; line-height: 1; text-shadow: 0 0 30px #00FF00;'>🚀</div>"
         else:
             img_b64 = get_image_base64("Screenshot_20260216_163106_Discord.jpg")
             if img_b64:
-                icon_html = f"<img src='data:image/jpeg;base64,{img_b64}' style='height: {icon_size}px; border-radius: 15px; box-shadow: 0 0 20px {ticker_color}; animation: flash {anim_speed}s infinite;'>"
+                icon_html = f"<img src='data:image/jpeg;base64,{img_b64}' style='height: {gme_icon_size}px; border-radius: 15px; box-shadow: 0 0 20px {gme_color}; animation: flash {gme_anim_speed}s infinite;'>"
             else:
-                icon_html = f"<div style='font-size: 80px; color: {ticker_color};'>⚠️ Image INTROUVABLE</div>"
+                icon_html = f"<div style='font-size: 80px; color: {gme_color};'>⚠️ Image INTROUVABLE</div>"
 
-        st.markdown(f"<div style='display: flex; justify-content: center; align-items: center; gap: 40px; margin-top: 30px; margin-bottom: 20px;'><div style='text-align: right;'><h2 style='color: #888; font-family: monospace; margin: 0;'>GAMESTOP CORP. (GME)</h2><h1 style='font-size: 110px; color: {ticker_color}; text-shadow: 0 0 20px {ticker_color}; margin: 0; line-height: 1;'>${current_gme_price:.2f}</h1><h3 style='color: {ticker_color}; margin: 0;'>{sign}{gme_change_pct:.2f}%</h3></div><div>{icon_html}</div></div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='display: flex; justify-content: center; align-items: center; gap: 40px; margin-top: 30px; margin-bottom: 20px;'><div style='text-align: right;'><h2 style='color: #888; font-family: monospace; margin: 0;'>GAMESTOP CORP. (GME)</h2><h1 style='font-size: 110px; color: {gme_color}; text-shadow: 0 0 20px {gme_color}; margin: 0; line-height: 1;'>${gme_price:.2f}</h1><h3 style='color: {gme_color}; margin: 0;'>{gme_sign}{gme_pct:.2f}%</h3></div><div>{icon_html}</div></div>", unsafe_allow_html=True)
         
-        if not chart_data.empty:
+        if not gme_chart.empty:
             fig, ax = plt.subplots(figsize=(10, 2.5), facecolor='#050505')
             ax.set_facecolor('#050505')
-            prices = chart_data.values
+            prices = gme_chart.values
             x_pos = np.arange(len(prices))
             min_y = np.min(prices) * 0.99
-            ax.bar(x_pos, prices - min_y, bottom=min_y, color=ticker_color, width=0.8, edgecolor='none')
+            ax.bar(x_pos, prices - min_y, bottom=min_y, color=gme_color, width=0.8, edgecolor='none')
             ax.axis('off')
             ax.set_xlim(-1, len(prices))
             ax.set_ylim(min_y, np.max(prices) * 1.01)
             plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
             st.pyplot(fig)
 
+    # ==========================================
+    # ONGLETS 2 : WARRANTS (Le Jumeau)
+    # ==========================================
     with tab2:
-        st.markdown("<h2 style='text-align: center;'>Écran 2 : Warrants GME-WT</h2>", unsafe_allow_html=True)
+        # Sécurité : Si Yahoo Finance ne trouve pas le symbole exact du Warrant, on évite le crash
+        if wt_price == 0.0:
+            st.warning("⚠️ Connexion au marché des Warrants en cours... (Symbole YF à vérifier)")
+            wt_price = st.session_state.wt_pru # Affiche le PRU en attendant
+            
+        wt_color = "#00FF00" if wt_pct >= 0 else "#FF3D00"
+        wt_sign = "+" if wt_pct >= 0 else ""
+        wt_abs_pct = abs(wt_pct)
+        wt_icon_size = min(100 + (wt_abs_pct * 10), 200)
+        wt_anim_speed = max(1.5 - (wt_abs_pct * 0.1), 0.4)
+        
+        if wt_pct >= 0:
+            icon_wt_html = f"<div style='font-size: {wt_icon_size}px; animation: rocket-pulse {wt_anim_speed}s ease-in-out infinite; line-height: 1; text-shadow: 0 0 30px #00FF00;'>🚀</div>"
+        else:
+            img_b64 = get_image_base64("Screenshot_20260216_163106_Discord.jpg")
+            if img_b64:
+                icon_wt_html = f"<img src='data:image/jpeg;base64,{img_b64}' style='height: {wt_icon_size}px; border-radius: 15px; box-shadow: 0 0 20px {wt_color}; animation: flash {wt_anim_speed}s infinite;'>"
+            else:
+                icon_wt_html = f"<div style='font-size: 80px; color: {wt_color};'>⚠️ Image INTROUVABLE</div>"
+
+        st.markdown(f"<div style='display: flex; justify-content: center; align-items: center; gap: 40px; margin-top: 30px; margin-bottom: 20px;'><div style='text-align: right;'><h2 style='color: #888; font-family: monospace; margin: 0;'>WARRANTS (GME-WT)</h2><h1 style='font-size: 110px; color: {wt_color}; text-shadow: 0 0 20px {wt_color}; margin: 0; line-height: 1;'>${wt_price:.3f}</h1><h3 style='color: {wt_color}; margin: 0;'>{wt_sign}{wt_pct:.2f}%</h3></div><div>{icon_wt_html}</div></div>", unsafe_allow_html=True)
+        
+        if not wt_chart.empty:
+            fig_wt, ax_wt = plt.subplots(figsize=(10, 2.5), facecolor='#050505')
+            ax_wt.set_facecolor('#050505')
+            prices_wt = wt_chart.values
+            x_pos_wt = np.arange(len(prices_wt))
+            min_y_wt = np.min(prices_wt) * 0.99
+            ax_wt.bar(x_pos_wt, prices_wt - min_y_wt, bottom=min_y_wt, color=wt_color, width=0.8, edgecolor='none')
+            ax_wt.axis('off')
+            ax_wt.set_xlim(-1, len(prices_wt))
+            ax_wt.set_ylim(min_y_wt, np.max(prices_wt) * 1.01)
+            plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
+            st.pyplot(fig_wt)
+
     with tab3:
         st.markdown("<h2 style='text-align: center;'>Écran 3 : Camembert EU</h2>", unsafe_allow_html=True)
     with tab4:
