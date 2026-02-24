@@ -72,7 +72,7 @@ components.html(
     width=0,
 )
 
-# Fonction d'encodage d'image placée en global pour être utilisée partout
+# Fonction d'encodage d'image globale
 def get_b64(path):
     try:
         with open(path, "rb") as f: return base64.b64encode(f.read()).decode()
@@ -92,20 +92,23 @@ st.markdown("""
 if 'launched' not in st.session_state:
     st.session_state.launched = False
 
-# --- 2. ACCUEIL (INTERFACE WEN MOON - CENTRAGE & TAILLES PARFAITS) ---
+# --- 2. ACCUEIL (INTERFACE WEN MOON - CENTRAGE VERTICAL ABSOLU & SYNCHRO) ---
 if not st.session_state.launched:
     
     wen_b64 = get_b64('Screenshot_20260216_163106_Discord.jpg')
     
-    # MODIFICATION ICI : Structure Flexbox avancée pour centrage parfait et tailles égales (90px)
+    # MODIFICATION ICI : Image agrandie, Fusée clignotante, Centrage vertical parfait
     st.markdown(f"""
     <br>
     <div style='display:flex; justify-content:center; align-items:center; width: 100%; margin-bottom: 40px;'>
-        <div style='flex: 0 0 150px; display: flex; justify-content: center;'> <img src='data:image/jpeg;base64,{wen_b64}' style='height:90px; animation: neon-blink-img 1.5s infinite;'>
+        <div style='flex: 0 0 160px; display: flex; justify-content: center; align-items: center;'>
+            <img src='data:image/jpeg;base64,{wen_b64}' style='height:110px; animation: neon-blink-img 1.5s infinite;'>
         </div>
-        <div style='flex: 1; text-align: center; white-space: nowrap; padding: 0 20px;'> <h1 style='font-size: 70px; margin: 0; animation: neon-blink-text 1.5s infinite;'>TERMINAL GME</h1>
+        <div style='flex: 1; text-align: center; white-space: nowrap; padding: 0 10px; display: flex; justify-content: center; align-items: center;'>
+            <h1 style='font-size: 70px; margin: 0; line-height: 1; animation: neon-blink-text 1.5s infinite;'>TERMINAL GME</h1>
         </div>
-        <div style='flex: 0 0 150px; display: flex; justify-content: center;'> <div style='font-size: 90px; animation: rocket-pulse 1s ease-in-out infinite;'>🚀</div>
+        <div style='flex: 0 0 160px; display: flex; justify-content: center; align-items: center;'>
+            <div style='font-size: 90px; animation: neon-blink-text 1.5s infinite, rocket-pulse 1s ease-in-out infinite;'>🚀</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
