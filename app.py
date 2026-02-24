@@ -19,21 +19,18 @@ st.markdown("""
         box-shadow: 0px 0px 20px #00FF00; margin-top: 30px;
     }
     
-    /* Animation Image WEN Moon */
     @keyframes flash {
         0% { opacity: 1; transform: scale(1); }
         50% { opacity: 0.4; transform: scale(1.05); }
         100% { opacity: 1; transform: scale(1); }
     }
     
-    /* Animation Fusée (Flotte) */
     @keyframes float {
         0% { transform: translateY(0px); }
         50% { transform: translateY(-10px); }
         100% { transform: translateY(0px); }
     }
     
-    /* Animation Flammes (Scintillement violent) */
     @keyframes flicker {
         0% { opacity: 1; transform: scale(1) translateY(0); }
         25% { opacity: 0.8; transform: scale(1.1) translateY(2px); }
@@ -106,50 +103,26 @@ else:
     ticker_color = "#00FF00" if gme_change_pct >= 0 else "#FF3D00"
     sign = "+" if gme_change_pct >= 0 else ""
     
-    # ---------------------------------------------------------
-    # MOTEUR DYNAMIQUE : Fusée, Image ET FLAMMES 🔥
-    # ---------------------------------------------------------
     abs_pct = abs(gme_change_pct)
-    
-    # 1. Taille et vitesse globales (Image & Fusée)
     icon_size = min(90 + (abs_pct * 8), 180)
     anim_speed = max(2.0 - (abs_pct * 0.15), 0.3)
-    
-    # 2. Taille et vitesse spécifiques aux FLAMMES (Réagissent beaucoup plus fort !)
     flame_size = min(40 + (abs_pct * 12), 160)
-    flame_speed = max(0.8 - (abs_pct * 0.1), 0.1) # Scintille très vite
+    flame_speed = max(0.8 - (abs_pct * 0.1), 0.1)
     
     tab1, tab2, tab3, tab4, tab5 = st.tabs(["📊 GME", "📜 WARRANTS", "🇪🇺 EU", "🇺🇸 US", "📋 DATA"])
     
     with tab1:
+        # Code aplati pour éviter que Streamlit ne le lise comme du texte brut
         if gme_change_pct >= 0:
-            # Code HTML de la Fusée avec son module de flammes indépendant
-            icon_html = f"""
-            <div style='text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: -30px;'>
-                <div style='font-size: {icon_size}px; animation: float {anim_speed}s ease-in-out infinite; z-index: 2; line-height: 1;'>🚀</div>
-                <div style='font-size: {flame_size}px; animation: flicker {flame_speed}s infinite alternate; margin-top: -{icon_size * 0.2}px; z-index: 1; line-height: 1;'>🔥</div>
-            </div>
-            """
+            icon_html = f"<div style='text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: -30px;'><div style='font-size: {icon_size}px; animation: float {anim_speed}s ease-in-out infinite; z-index: 2; line-height: 1;'>🚀</div><div style='font-size: {flame_size}px; animation: flicker {flame_speed}s infinite alternate; margin-top: -{icon_size * 0.2}px; z-index: 1; line-height: 1;'>🔥</div></div>"
         else:
-            # Code HTML de ton Image WEN Moon
             img_b64 = get_image_base64("Screenshot_20260216_163106_Discord.jpg")
             if img_b64:
                 icon_html = f"<img src='data:image/jpeg;base64,{img_b64}' style='height: {icon_size}px; border-radius: 15px; box-shadow: 0 0 20px {ticker_color}; animation: flash {anim_speed}s infinite;'>"
             else:
                 icon_html = f"<div style='font-size: 80px; color: {ticker_color};'>⚠️ Image INTROUVABLE</div>"
 
-        st.markdown(f"""
-        <div style="display: flex; justify-content: center; align-items: center; gap: 40px; margin-top: 30px; margin-bottom: 20px;">
-            <div style="text-align: right;">
-                <h2 style="color: #888; font-family: monospace; margin: 0;">GAMESTOP CORP. (GME)</h2>
-                <h1 style="font-size: 110px; color: {ticker_color}; text-shadow: 0 0 20px {ticker_color}; margin: 0; line-height: 1;">${current_gme_price:.2f}</h1>
-                <h3 style="color: {ticker_color}; margin: 0;">{sign}{gme_change_pct:.2f}%</h3>
-            </div>
-            <div>
-                {icon_html}
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+        st.markdown(f"<div style='display: flex; justify-content: center; align-items: center; gap: 40px; margin-top: 30px; margin-bottom: 20px;'><div style='text-align: right;'><h2 style='color: #888; font-family: monospace; margin: 0;'>GAMESTOP CORP. (GME)</h2><h1 style='font-size: 110px; color: {ticker_color}; text-shadow: 0 0 20px {ticker_color}; margin: 0; line-height: 1;'>${current_gme_price:.2f}</h1><h3 style='color: {ticker_color}; margin: 0;'>{sign}{gme_change_pct:.2f}%</h3></div><div>{icon_html}</div></div>", unsafe_allow_html=True)
         
         if not chart_data.empty:
             fig, ax = plt.subplots(figsize=(10, 2.5), facecolor='#050505')
