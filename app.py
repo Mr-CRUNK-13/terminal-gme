@@ -11,27 +11,60 @@ from datetime import datetime
 # --- 1. CONFIGURATION ---
 st.set_page_config(page_title="TERMINAL GME", page_icon="Screenshot_20260216_163106_Discord.jpg", layout="wide", initial_sidebar_state="collapsed")
 
-# --- INJECTION DU MANIFESTE (MODE STANDALONE POUR PLEIN ÉCRAN SUR TABLETTE) ---
+# --- INJECTION DU MANIFESTE & BOUTON PLEIN ÉCRAN FLOTTANT ---
 components.html(
     """
     <script>
-    const parentHead = window.parent.document.querySelector('head');
-    if (!window.parent.document.querySelector('#pwa-manifest')) {
-        parentHead.insertAdjacentHTML('beforeend', '<meta name="apple-mobile-web-app-capable" content="yes">');
-        parentHead.insertAdjacentHTML('beforeend', '<meta name="mobile-web-app-capable" content="yes">');
-        parentHead.insertAdjacentHTML('beforeend', '<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">');
-        
+    const parent = window.parent.document;
+    const head = parent.querySelector('head');
+    
+    // 1. PWA Meta tags (Forcer le mode fullscreen)
+    if (!parent.querySelector('#pwa-manifest')) {
+        head.insertAdjacentHTML('beforeend', '<meta name="apple-mobile-web-app-capable" content="yes">');
+        head.insertAdjacentHTML('beforeend', '<meta name="mobile-web-app-capable" content="yes">');
+        head.insertAdjacentHTML('beforeend', '<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">');
         const manifest = {
-            "name": "TERMINAL GME",
-            "short_name": "GME",
+            "name": "TERMINAL GME", "short_name": "GME",
             "start_url": window.parent.location.href,
-            "display": "standalone",
-            "background_color": "#050505",
-            "theme_color": "#050505"
+            "display": "fullscreen",
+            "background_color": "#050505", "theme_color": "#050505"
         };
         const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
-        const manifestURL = URL.createObjectURL(blob);
-        parentHead.insertAdjacentHTML('beforeend', '<link id="pwa-manifest" rel="manifest" href="' + manifestURL + '">');
+        head.insertAdjacentHTML('beforeend', '<link id="pwa-manifest" rel="manifest" href="' + URL.createObjectURL(blob) + '">');
+    }
+
+    // 2. Création du Bouton Plein Écran (Style Terminal Néon)
+    if (!parent.getElementById('btn-fullscreen')) {
+        const btn = parent.createElement('button');
+        btn.id = 'btn-fullscreen';
+        btn.innerText = '⛶'; // Icône Plein Écran
+        btn.style.position = 'fixed';
+        btn.style.bottom = '20px';
+        btn.style.right = '20px';
+        btn.style.zIndex = '99999';
+        btn.style.background = '#050505';
+        btn.style.color = '#00FF00';
+        btn.style.border = '2px solid #00FF00';
+        btn.style.borderRadius = '10px';
+        btn.style.width = '55px';
+        btn.style.height = '55px';
+        btn.style.fontSize = '30px';
+        btn.style.cursor = 'pointer';
+        btn.style.boxShadow = '0 0 15px #00FF00';
+        
+        btn.onclick = function() {
+            const docEl = parent.documentElement;
+            if (!parent.fullscreenElement) {
+                if (docEl.requestFullscreen) docEl.requestFullscreen();
+                else if (docEl.webkitRequestFullscreen) docEl.webkitRequestFullscreen();
+                else if (docEl.msRequestFullscreen) docEl.msRequestFullscreen();
+            } else {
+                if (parent.exitFullscreen) parent.exitFullscreen();
+                else if (parent.webkitExitFullscreen) parent.webkitExitFullscreen();
+                else if (parent.msExitFullscreen) parent.msExitFullscreen();
+            }
+        };
+        parent.body.appendChild(btn);
     }
     </script>
     """,
@@ -51,7 +84,7 @@ st.markdown("""
 if 'launched' not in st.session_state:
     st.session_state.launched = False
 
-# --- 2. ACCUEIL (CONFIGURATION) ---
+# --- 2. ACCUEIL (CONFIGURATION + SIGNATURE) ---
 if not st.session_state.launched:
     st.markdown("<br><br><h1 style='text-align: center; font-size: 50px;'>TERMINAL GME</h1>", unsafe_allow_html=True)
     with st.expander("⚙️ CONFIGURATION DU PORTEFEUILLE"):
@@ -76,6 +109,10 @@ if not st.session_state.launched:
     if st.button("LANCER LE SYSTÈME 🚀", use_container_width=True):
         st.session_state.update(qn=gme_ny_qty, pn=gme_ny_pru, qw=wt_qty, pw=wt_pru, qx=xet_qty, px=xet_pru, qt=tdg_qty, pt=tdg_pru, gp=global_pru, launched=True)
         st.rerun()
+    
+    # --- SIGNATURE AJOUTÉE ICI ---
+    st.markdown("<h4 style='text-align: right; color: white; margin-top: 30px; font-family: monospace; opacity: 0.7;'>By Mr-CRUNK-13</h4>", unsafe_allow_html=True)
+
 
 # --- 3. TERMINAL ---
 else:
@@ -90,13 +127,13 @@ else:
             return p_n, p_w, p_x, rate, prev_n, prev_w, data['GME'], data['GME-WT']
         except: return 24.50, 4.30, 22.10, 1.08, 24.0, 4.0, pd.Series(), pd.Series()
 
-    # --- CALCULS MASTER (SÉCURITÉ ANTI-BUG) ---
+    # --- CALCULS MASTER ---
     p_nsy, p_wt, p_xet, fx, pr_nsy, pr_wt, ch_gme, ch_wt = fetch_terminal_data()
     qn, pn, qw, pw = st.session_state.qn, st.session_state.pn, st.session_state.qw, st.session_state.pw
     qx, px, qt, pt = st.session_state.qx, st.session_state.px, st.session_state.qt, st.session_state.pt
     gp = st.session_state.gp
 
-    total_shares = qn + qx + qt # 4950
+    total_shares = qn + qx + qt
     v_s_u = total_shares * p_nsy
     v_w_u = qw * p_wt
     t_v_u, t_c_u = v_s_u + v_w_u, (total_shares * gp) + (qw * pw)
@@ -109,7 +146,7 @@ else:
 
     tab1, tab2, tab3, tab4, tab5 = st.tabs(["📊 GME", "📜 WARRANTS", "🇪🇺 EU", "🇺🇸 US", "📋 DATA"])
 
-    # --- ECRAN 1 (GME) & 2 (WARRANTS) ---
+    # --- ECRAN 1 & 2 ---
     def draw_live(price, prev, chart, title):
         pct = ((price - prev) / prev) * 100
         clr = "#00FF00" if pct >= 0 else "#FF3D00"
@@ -124,7 +161,7 @@ else:
     with tab1: draw_live(p_nsy, pr_nsy, ch_gme, "GME")
     with tab2: draw_live(p_wt, pr_wt, ch_wt, "WARRANTS")
 
-    # --- ECRAN 3 : EU (PRU $20.404 & RÉCAP CENTRÉ) ---
+    # --- ECRAN 3 : EU ---
     with tab3:
         vne, vwe = (qn*p_nsy)/fx, (qw*p_wt)/fx
         vxe, vte = qx*p_xet, qt*p_xet
@@ -153,7 +190,7 @@ else:
         plt.figtext(0.5, 0.05, footer, color="#00FF00", fontsize=38, ha="center", weight="bold", bbox=dict(boxstyle="round,pad=1", fc="#0e1621", ec="white", lw=3))
         st.pyplot(fig3)
 
-    # --- ECRAN 4 : US (VERSION PARFAITE À 3 PANNEAUX) ---
+    # --- ECRAN 4 : US ---
     with tab4:
         pl_s_u = v_s_u - (total_shares * gp)
         pl_w_u = v_w_u - (qw * pw)
@@ -185,7 +222,7 @@ else:
         ar.annotate("", xy=(0.08, 0.5), xytext=(-0.19, 0.5), arrowprops=dict(arrowstyle="->", color="#006400", lw=20))
         st.pyplot(fig4)
 
-    # --- ECRAN 5 : DATA (TABLE BLEUE VERROUILLÉE) ---
+    # --- ECRAN 5 : DATA ---
     with tab5:
         fig5, ax5 = plt.subplots(figsize=(14, 6)); fig5.patch.set_facecolor("#0f172a"); ax5.axis('off')
         def f5(v, c): s = "+" if v-c>=0 else "-"; p = ((v-c)/c)*100 if c!=0 else 0; return f"{s}${abs(v-c):,.2f} ({s}{abs(p):.2f}%)"
