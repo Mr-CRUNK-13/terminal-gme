@@ -3,7 +3,7 @@ import yfinance as yf
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import os
+import base64
 
 # --- 1. CONFIGURATION ---
 st.set_page_config(page_title="TERMINAL GME", layout="wide", initial_sidebar_state="collapsed")
@@ -18,12 +18,29 @@ st.markdown("""
         width: 100%; text-align: center; display: block;
         box-shadow: 0px 0px 20px #00FF00; margin-top: 30px;
     }
-    @keyframes pulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.1); }
-        100% { transform: scale(1); }
+    
+    /* Animation Image WEN Moon */
+    @keyframes flash {
+        0% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.4; transform: scale(1.05); }
+        100% { opacity: 1; transform: scale(1); }
     }
-    .rocket { animation: pulse 2s infinite; font-size: 150px; text-align: center; margin-bottom: 30px; }
+    
+    /* Animation Fusée (Flotte) */
+    @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0px); }
+    }
+    
+    /* Animation Flammes (Scintillement violent) */
+    @keyframes flicker {
+        0% { opacity: 1; transform: scale(1) translateY(0); }
+        25% { opacity: 0.8; transform: scale(1.1) translateY(2px); }
+        50% { opacity: 1; transform: scale(0.9) translateY(-2px); }
+        75% { opacity: 0.9; transform: scale(1.2) translateY(4px); }
+        100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -35,17 +52,24 @@ if not st.session_state.launched:
     st.markdown("<br><br><h1 style='text-align: center; font-size: 50px;'>TERMINAL GME</h1>", unsafe_allow_html=True)
     
     with st.expander("⚙️ CONFIGURATION DU PORTEFEUILLE"):
+        st.text_input("Surnom pour le Leaderboard", value="Mr-CRUNK-13")
+        
         col1, col2 = st.columns(2)
         with col1:
-            gme_qty = st.number_input("Quantité GME (US)", value=4000, step=1)
+            st.markdown("### 🇺🇸 Actions GME (US)")
+            gme_qty = st.number_input("Quantité GME", value=4000, step=1)
             gme_pru = st.number_input("PRU GME ($)", value=20.404, format="%.3f")
+            st.markdown("### 📜 Warrants GME-WT")
             wt_qty = st.number_input("Quantité Warrants", value=4013, step=1)
             wt_pru = st.number_input("PRU Warrants ($)", value=3.243, format="%.3f")
+            
         with col2:
-            xet_qty = st.number_input("Quantité XET (EU)", value=650, step=1)
-            xet_pru = st.number_input("PRU XET (€)", value=25.877, format="%.3f")
-            tdg_qty = st.number_input("Quantité TDG (EU)", value=300, step=1)
-            tdg_pru = st.number_input("PRU TDG (€)", value=25.994, format="%.3f")
+            st.markdown("### 🇪🇺 Actions GME (XET)")
+            xet_qty = st.number_input("Quantité EU 1", value=650, step=1)
+            xet_pru = st.number_input("PRU EU 1 (€)", value=25.877, format="%.3f")
+            st.markdown("### 🇪🇺 Actions GME (TDG)")
+            tdg_qty = st.number_input("Quantité EU 2", value=300, step=1)
+            tdg_pru = st.number_input("PRU EU 2 (€)", value=25.994, format="%.3f")
 
     if st.button("LANCER LE SYSTÈME 🚀", use_container_width=True):
         st.session_state.update(gme_qty=gme_qty, gme_pru=gme_pru, wt_qty=wt_qty, wt_pru=wt_pru, 
@@ -58,53 +82,83 @@ else:
     def get_live_data():
         try:
             ticker = yf.Ticker("GME")
-            # NOUVEAU RÉGLAGE : Uniquement le jour actuel (1d), toutes les 2 minutes, avec le pre/post market
             hist = ticker.history(period="1d", interval="2m", prepost=True)
-            
             if not hist.empty:
                 current_gme_price = float(hist['Close'].iloc[-1])
-                # On récupère le prix de clôture de la veille pour avoir le VRAI pourcentage journalier
                 prev_close = float(ticker.fast_info['previousClose'])
             else:
-                # Filet de sécurité si Yahoo Finance met du temps à charger le graphique
                 current_gme_price = float(ticker.fast_info['lastPrice'])
                 prev_close = float(ticker.fast_info['previousClose'])
                 
             gme_change_pct = ((current_gme_price - prev_close) / prev_close) * 100 if prev_close > 0 else 0.0
-            
             return current_gme_price, gme_change_pct, hist['Close']
-            
-        except Exception as e:
+        except Exception:
             return 25.00, 0.0, pd.Series()
+            
+    def get_image_base64(image_path):
+        try:
+            with open(image_path, "rb") as img_file:
+                return base64.b64encode(img_file.read()).decode()
+        except Exception:
+            return ""
     
     current_gme_price, gme_change_pct, chart_data = get_live_data()
     ticker_color = "#00FF00" if gme_change_pct >= 0 else "#FF3D00"
     sign = "+" if gme_change_pct >= 0 else ""
     
+    # ---------------------------------------------------------
+    # MOTEUR DYNAMIQUE : Fusée, Image ET FLAMMES 🔥
+    # ---------------------------------------------------------
+    abs_pct = abs(gme_change_pct)
+    
+    # 1. Taille et vitesse globales (Image & Fusée)
+    icon_size = min(90 + (abs_pct * 8), 180)
+    anim_speed = max(2.0 - (abs_pct * 0.15), 0.3)
+    
+    # 2. Taille et vitesse spécifiques aux FLAMMES (Réagissent beaucoup plus fort !)
+    flame_size = min(40 + (abs_pct * 12), 160)
+    flame_speed = max(0.8 - (abs_pct * 0.1), 0.1) # Scintille très vite
+    
     tab1, tab2, tab3, tab4, tab5 = st.tabs(["📊 GME", "📜 WARRANTS", "🇪🇺 EU", "🇺🇸 US", "📋 DATA"])
     
     with tab1:
-        # PRIX EN DIRECT
+        if gme_change_pct >= 0:
+            # Code HTML de la Fusée avec son module de flammes indépendant
+            icon_html = f"""
+            <div style='text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: -30px;'>
+                <div style='font-size: {icon_size}px; animation: float {anim_speed}s ease-in-out infinite; z-index: 2; line-height: 1;'>🚀</div>
+                <div style='font-size: {flame_size}px; animation: flicker {flame_speed}s infinite alternate; margin-top: -{icon_size * 0.2}px; z-index: 1; line-height: 1;'>🔥</div>
+            </div>
+            """
+        else:
+            # Code HTML de ton Image WEN Moon
+            img_b64 = get_image_base64("Screenshot_20260216_163106_Discord.jpg")
+            if img_b64:
+                icon_html = f"<img src='data:image/jpeg;base64,{img_b64}' style='height: {icon_size}px; border-radius: 15px; box-shadow: 0 0 20px {ticker_color}; animation: flash {anim_speed}s infinite;'>"
+            else:
+                icon_html = f"<div style='font-size: 80px; color: {ticker_color};'>⚠️ Image INTROUVABLE</div>"
+
         st.markdown(f"""
-        <div style="text-align: center; margin-top: 20px;">
-            <h2 style="color: #888; font-family: monospace;">GAMESTOP CORP. (GME)</h2>
-            <h1 style="font-size: 100px; color: {ticker_color}; text-shadow: 0 0 20px {ticker_color};">${current_gme_price:.2f}</h1>
-            <h3 style="color: {ticker_color};">{sign}{gme_change_pct:.2f}%</h3>
+        <div style="display: flex; justify-content: center; align-items: center; gap: 40px; margin-top: 30px; margin-bottom: 20px;">
+            <div style="text-align: right;">
+                <h2 style="color: #888; font-family: monospace; margin: 0;">GAMESTOP CORP. (GME)</h2>
+                <h1 style="font-size: 110px; color: {ticker_color}; text-shadow: 0 0 20px {ticker_color}; margin: 0; line-height: 1;">${current_gme_price:.2f}</h1>
+                <h3 style="color: {ticker_color}; margin: 0;">{sign}{gme_change_pct:.2f}%</h3>
+            </div>
+            <div>
+                {icon_html}
+            </div>
         </div>
         """, unsafe_allow_html=True)
         
-        # VRAI GRAPHIQUE LED JOURNALIER
         if not chart_data.empty:
             fig, ax = plt.subplots(figsize=(10, 2.5), facecolor='#050505')
             ax.set_facecolor('#050505')
             
             prices = chart_data.values
             x_pos = np.arange(len(prices))
-            
-            # On coupe le bas du graphique au plus proche du prix pour accentuer visuellement les variations
             min_y = np.min(prices) * 0.99
             
-            # Dessin des barres denses avec la couleur du jour (Vert ou Rouge)
             ax.bar(x_pos, prices - min_y, bottom=min_y, color=ticker_color, width=0.8, edgecolor='none')
             
             ax.axis('off')
@@ -113,17 +167,6 @@ else:
             
             plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
             st.pyplot(fig)
-        
-        st.markdown("<br>", unsafe_allow_html=True)
-        
-        # LOGIQUE D'AFFICHAGE : FUSÉE OU TON IMAGE WEN MOON
-        if gme_change_pct >= 0:
-            st.markdown("<div class='rocket'>🚀</div>", unsafe_allow_html=True)
-        else:
-            try:
-                st.image("Screenshot_20260216_163106_Discord.jpg", use_container_width=True)
-            except:
-                st.warning("⚠️ Image introuvable dans le coffre GitHub.")
 
     with tab2:
         st.markdown("<h2 style='text-align: center;'>Écran 2 : Warrants GME-WT</h2>", unsafe_allow_html=True)
