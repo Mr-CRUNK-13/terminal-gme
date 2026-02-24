@@ -11,7 +11,7 @@ from datetime import datetime
 # --- 1. CONFIGURATION ---
 st.set_page_config(page_title="TERMINAL GME", page_icon="Screenshot_20260216_163106_Discord.jpg", layout="wide", initial_sidebar_state="collapsed")
 
-# --- INJECTION DU MANIFESTE & BOUTON PLEIN ÉCRAN FLOTTANT (POSITION CORRIGÉE) ---
+# --- INJECTION DU MANIFESTE & BOUTON PLEIN ÉCRAN FLOTTANT ---
 components.html(
     """
     <script>
@@ -39,7 +39,6 @@ components.html(
         btn.id = 'btn-fullscreen';
         btn.innerText = '⛶'; // Icône Plein Écran
         btn.style.position = 'fixed';
-        // MODIFICATION ICI : Passage de 20px à 70px pour éviter "Manage app"
         btn.style.bottom = '70px';
         btn.style.right = '20px';
         btn.style.zIndex = '99999';
@@ -112,7 +111,6 @@ if not st.session_state.launched:
         st.rerun()
     
     st.markdown("<h4 style='text-align: right; color: white; margin-top: 30px; font-family: monospace; opacity: 0.7;'>By Mr-CRUNK-13</h4>", unsafe_allow_html=True)
-
 
 # --- 3. TERMINAL ---
 else:
@@ -210,7 +208,10 @@ else:
         ac.text(-1.1, 0, f"{(v_s_u/t_v_u)*100:.0f}%", fontsize=75, color="black", ha="center", weight="bold")
         ac.text(1.1, 0, f"{(v_w_u/t_v_u)*100:.0f}%", fontsize=75, color="black", ha="center", weight="bold")
         ac.text(0, 0.15, "Total Value:", fontsize=45, color="white", ha="center", weight="bold")
-        ac.text(0, -0.05, f"${t_v_u:,.2f}", fontsize(85), color="white", ha="center", weight="bold")
+        
+        # L'ERREUR ÉTAIT ICI (fontsize=85 et non fontsize(85))
+        ac.text(0, -0.05, f"${t_v_u:,.2f}", fontsize=85, color="white", ha="center", weight="bold")
+        
         ac.text(0, -0.25, f"{t_pl_u:+,.2f} ({t_pl_u/t_c_u:+.2%})", fontsize=48, color="#00FF00" if t_pl_u>=0 else "#FF3D00", ha="center", weight="bold")
         # Panneau Droit
         ar = fig4.add_subplot(gs[2]); ar.set_facecolor("#0e1621"); ar.axis('off')
