@@ -72,21 +72,40 @@ components.html(
     width=0,
 )
 
+# Fonction d'encodage d'image placée en global pour être utilisée partout
+def get_b64(path):
+    try:
+        with open(path, "rb") as f: return base64.b64encode(f.read()).decode()
+    except: return ""
+
 st.markdown("""
 <style>
     body, .stApp { background-color: #050505 !important; color: white; }
     #MainMenu, footer, header {visibility: hidden;}
     @keyframes flash { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.05); box-shadow: 0 0 30px #FF3D00; } 100% { opacity: 1; transform: scale(1); } }
     @keyframes rocket-pulse { 0% { transform: translateY(0px) scale(1); } 50% { transform: translateY(-20px) scale(1.15); } 100% { transform: translateY(0px) scale(1); } }
+    @keyframes neon-blink-text { 0%, 100% { color: white; text-shadow: none; } 50% { color: #00FF00; text-shadow: 0 0 20px #00FF00, 0 0 40px #00FF00; } }
+    @keyframes neon-blink-img { 0%, 100% { filter: drop-shadow(0 0 0px transparent); } 50% { filter: drop-shadow(0 0 20px #00FF00); } }
 </style>
 """, unsafe_allow_html=True)
 
 if 'launched' not in st.session_state:
     st.session_state.launched = False
 
-# --- 2. ACCUEIL (CONFIGURATION + SIGNATURE) ---
+# --- 2. ACCUEIL (INTERFACE WEN MOON) ---
 if not st.session_state.launched:
-    st.markdown("<br><br><h1 style='text-align: center; font-size: 50px;'>TERMINAL GME</h1>", unsafe_allow_html=True)
+    
+    wen_b64 = get_b64('Screenshot_20260216_163106_Discord.jpg')
+    
+    st.markdown(f"""
+    <br>
+    <div style='display:flex; justify-content:center; align-items:center; gap:50px; margin-bottom: 40px;'>
+        <img src='data:image/jpeg;base64,{wen_b64}' style='height:125px; animation: neon-blink-img 1.5s infinite;'>
+        <h1 style='font-size: 100px; margin: 0; animation: neon-blink-text 1.5s infinite; text-align: center; white-space: nowrap;'>TERMINAL GME</h1>
+        <div style='font-size: 125px; animation: rocket-pulse 1s ease-in-out infinite;'>🚀</div>
+    </div>
+    """, unsafe_allow_html=True)
+    
     with st.expander("⚙️ CONFIGURATION DU PORTEFEUILLE"):
         col1, col2 = st.columns(2)
         with col1:
@@ -106,11 +125,11 @@ if not st.session_state.launched:
             st.markdown("### ⚓ PRU Global Actions US")
             global_pru = st.number_input("PRU Moyen Global (Data & US Tab) ($)", value=22.33, format="%.3f")
 
-    if st.button("LANCER LE SYSTÈME 🚀", use_container_width=True):
+    if st.button("LANCER LE SYSTÈME WEN MOON 🚀🌘!", use_container_width=True):
         st.session_state.update(qn=gme_ny_qty, pn=gme_ny_pru, qw=wt_qty, pw=wt_pru, qx=xet_qty, px=xet_pru, qt=tdg_qty, pt=tdg_pru, gp=global_pru, launched=True)
         st.rerun()
     
-    st.markdown("<h4 style='text-align: right; color: white; margin-top: 30px; font-family: monospace; opacity: 0.7;'>By Mr-CRUNK-13</h4>", unsafe_allow_html=True)
+    st.markdown("<h4 style='text-align: right; margin-top: 30px; font-family: monospace; animation: neon-blink-text 1.5s infinite;'>By Mr-CRUNK-13</h4>", unsafe_allow_html=True)
 
 # --- 3. TERMINAL ---
 else:
@@ -136,11 +155,6 @@ else:
     v_w_u = qw * p_wt
     t_v_u, t_c_u = v_s_u + v_w_u, (total_shares * gp) + (qw * pw)
     t_pl_u = t_v_u - t_c_u
-
-    def get_b64(path):
-        try:
-            with open(path, "rb") as f: return base64.b64encode(f.read()).decode()
-        except: return ""
 
     tab1, tab2, tab3, tab4, tab5 = st.tabs(["📊 GME", "📜 WARRANTS", "🇪🇺 EU", "🇺🇸 US", "📋 DATA"])
 
@@ -208,10 +222,7 @@ else:
         ac.text(-1.1, 0, f"{(v_s_u/t_v_u)*100:.0f}%", fontsize=75, color="black", ha="center", weight="bold")
         ac.text(1.1, 0, f"{(v_w_u/t_v_u)*100:.0f}%", fontsize=75, color="black", ha="center", weight="bold")
         ac.text(0, 0.15, "Total Value:", fontsize=45, color="white", ha="center", weight="bold")
-        
-        # L'ERREUR ÉTAIT ICI (fontsize=85 et non fontsize(85))
         ac.text(0, -0.05, f"${t_v_u:,.2f}", fontsize=85, color="white", ha="center", weight="bold")
-        
         ac.text(0, -0.25, f"{t_pl_u:+,.2f} ({t_pl_u/t_c_u:+.2%})", fontsize=48, color="#00FF00" if t_pl_u>=0 else "#FF3D00", ha="center", weight="bold")
         # Panneau Droit
         ar = fig4.add_subplot(gs[2]); ar.set_facecolor("#0e1621"); ar.axis('off')
