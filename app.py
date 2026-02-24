@@ -84,8 +84,8 @@ st.markdown("""
     #MainMenu, footer, header {visibility: hidden;}
     @keyframes flash { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.05); box-shadow: 0 0 30px #FF3D00; } 100% { opacity: 1; transform: scale(1); } }
     @keyframes rocket-pulse { 0% { transform: translateY(0px) scale(1); } 50% { transform: translateY(-20px) scale(1.15); } 100% { transform: translateY(0px) scale(1); } }
-    /* MODIFICATION ICI : Néon beaucoup plus large et intense pour le texte et la fusée */
-    @keyframes neon-blink-text { 0%, 100% { color: white; text-shadow: none; } 50% { color: #00FF00; text-shadow: 0 0 10px #00FF00, 0 0 30px #00FF00, 0 0 60px #00FF00, 0 0 90px #00FF00; } }
+    /* MODIFICATION ICI : Néon ULTRA-LARGE et intense */
+    @keyframes neon-blink-text { 0%, 100% { color: white; text-shadow: none; } 50% { color: #00FF00; text-shadow: 0 0 10px #00FF00, 0 0 40px #00FF00, 0 0 80px #00FF00, 0 0 120px #00FF00, 0 0 160px #00FF00; } }
     @keyframes neon-blink-img { 0%, 100% { filter: drop-shadow(0 0 0px transparent); } 50% { filter: drop-shadow(0 0 20px #00FF00); } }
 </style>
 """, unsafe_allow_html=True)
@@ -93,23 +93,25 @@ st.markdown("""
 if 'launched' not in st.session_state:
     st.session_state.launched = False
 
-# --- 2. ACCUEIL (INTERFACE WEN MOON - ULTIME CALIBRAGE V20) ---
+# --- 2. ACCUEIL (INTERFACE WEN MOON - V21 FINALE) ---
 if not st.session_state.launched:
     
     wen_b64 = get_b64('Screenshot_20260216_163106_Discord.jpg')
     
-    # MODIFICATION ICI : Image 120px, Conteneurs élargis à 170px, Padding-top sur le titre pour le descendre
+    # MODIFICATION ICI : Image 130px, Conteneurs 180px, et FIX DU BUG PLEIN ÉCRAN (séparation des animations)
     st.markdown(f"""
     <br>
     <div style='display:flex; justify-content:center; align-items:center; width: 100%; margin-bottom: 40px;'>
-        <div style='flex: 0 0 170px; display: flex; justify-content: center; align-items: center;'>
-            <img src='data:image/jpeg;base64,{wen_b64}' style='height:120px; animation: neon-blink-img 1.5s infinite;'>
+        <div style='flex: 0 0 180px; display: flex; justify-content: center; align-items: center;'>
+            <img src='data:image/jpeg;base64,{wen_b64}' style='height:130px; animation: neon-blink-img 1.5s infinite;'>
         </div>
         <div style='flex: 1; text-align: center; white-space: nowrap; padding: 0 10px; display: flex; justify-content: center; align-items: center;'>
             <h1 style='font-size: 70px; margin: 0; line-height: 1; padding-top: 15px; animation: neon-blink-text 1.5s infinite;'>TERMINAL GME</h1>
         </div>
-        <div style='flex: 0 0 170px; display: flex; justify-content: center; align-items: center;'>
-            <div style='font-size: 90px; animation: neon-blink-text 1.5s infinite, rocket-pulse 1s ease-in-out infinite;'>🚀</div>
+        <div style='flex: 0 0 180px; display: flex; justify-content: center; align-items: center;'>
+            <div style='font-size: 90px; animation: rocket-pulse 1s ease-in-out infinite;'>
+                <span style='animation: neon-blink-text 1.5s infinite;'>🚀</span>
+            </div>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -238,7 +240,7 @@ else:
         ar.text(0.1, 0.70, f"Val: ${v_w_u:,.2f}", color="white", fontsize=63, ha="left", weight="bold")
         ar.text(0.1, 0.55, f"Qty: {qw:,} | Price: ${p_wt:.2f}", color="#00FF00" if pl_w_u>=0 else "#FF3D00", fontsize=84, ha="left", weight="bold")
         ar.text(0.1, 0.40, f"Avg Cost: ${pw:.3f}", color="white", fontsize=63, ha="left", weight="bold")
-        ar.text(0.1, 0.25, f"P/L: {pl_w_u:+,.2f} ({pl_w_u/(qw*pw):+.2%})", color="#00FF00" if pl_w_u>=0 else "#FF3D00", fontsize=84, ha="left", weight="bold")
+        ar.text(0.1, 0.25, f"P/L: {pl_w_u:+,.2f} ({pl_w_u/(qw*pw):+.2%})", color="#00FF00" if pl_w_u>=0 else "#FF3D00", fontsize(84, ha="left", weight="bold")
         ar.annotate("", xy=(0.08, 0.5), xytext=(-0.19, 0.5), arrowprops=dict(arrowstyle="->", color="#006400", lw=20))
         st.pyplot(fig4)
 
