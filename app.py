@@ -84,7 +84,8 @@ st.markdown("""
     #MainMenu, footer, header {visibility: hidden;}
     @keyframes flash { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.05); box-shadow: 0 0 30px #FF3D00; } 100% { opacity: 1; transform: scale(1); } }
     @keyframes rocket-pulse { 0% { transform: translateY(0px) scale(1); } 50% { transform: translateY(-20px) scale(1.15); } 100% { transform: translateY(0px) scale(1); } }
-    @keyframes neon-blink-text { 0%, 100% { color: white; text-shadow: none; } 50% { color: #00FF00; text-shadow: 0 0 20px #00FF00, 0 0 40px #00FF00; } }
+    /* MODIFICATION ICI : Néon beaucoup plus large et intense pour le texte et la fusée */
+    @keyframes neon-blink-text { 0%, 100% { color: white; text-shadow: none; } 50% { color: #00FF00; text-shadow: 0 0 10px #00FF00, 0 0 30px #00FF00, 0 0 60px #00FF00, 0 0 90px #00FF00; } }
     @keyframes neon-blink-img { 0%, 100% { filter: drop-shadow(0 0 0px transparent); } 50% { filter: drop-shadow(0 0 20px #00FF00); } }
 </style>
 """, unsafe_allow_html=True)
@@ -92,22 +93,22 @@ st.markdown("""
 if 'launched' not in st.session_state:
     st.session_state.launched = False
 
-# --- 2. ACCUEIL (INTERFACE WEN MOON - CENTRAGE VERTICAL ABSOLU & SYNCHRO) ---
+# --- 2. ACCUEIL (INTERFACE WEN MOON - ULTIME CALIBRAGE V20) ---
 if not st.session_state.launched:
     
     wen_b64 = get_b64('Screenshot_20260216_163106_Discord.jpg')
     
-    # MODIFICATION ICI : Image agrandie, Fusée clignotante, Centrage vertical parfait
+    # MODIFICATION ICI : Image 120px, Conteneurs élargis à 170px, Padding-top sur le titre pour le descendre
     st.markdown(f"""
     <br>
     <div style='display:flex; justify-content:center; align-items:center; width: 100%; margin-bottom: 40px;'>
-        <div style='flex: 0 0 160px; display: flex; justify-content: center; align-items: center;'>
-            <img src='data:image/jpeg;base64,{wen_b64}' style='height:110px; animation: neon-blink-img 1.5s infinite;'>
+        <div style='flex: 0 0 170px; display: flex; justify-content: center; align-items: center;'>
+            <img src='data:image/jpeg;base64,{wen_b64}' style='height:120px; animation: neon-blink-img 1.5s infinite;'>
         </div>
         <div style='flex: 1; text-align: center; white-space: nowrap; padding: 0 10px; display: flex; justify-content: center; align-items: center;'>
-            <h1 style='font-size: 70px; margin: 0; line-height: 1; animation: neon-blink-text 1.5s infinite;'>TERMINAL GME</h1>
+            <h1 style='font-size: 70px; margin: 0; line-height: 1; padding-top: 15px; animation: neon-blink-text 1.5s infinite;'>TERMINAL GME</h1>
         </div>
-        <div style='flex: 0 0 160px; display: flex; justify-content: center; align-items: center;'>
+        <div style='flex: 0 0 170px; display: flex; justify-content: center; align-items: center;'>
             <div style='font-size: 90px; animation: neon-blink-text 1.5s infinite, rocket-pulse 1s ease-in-out infinite;'>🚀</div>
         </div>
     </div>
@@ -229,7 +230,7 @@ else:
         ac.text(-1.1, 0, f"{(v_s_u/t_v_u)*100:.0f}%", fontsize=75, color="black", ha="center", weight="bold")
         ac.text(1.1, 0, f"{(v_w_u/t_v_u)*100:.0f}%", fontsize=75, color="black", ha="center", weight="bold")
         ac.text(0, 0.15, "Total Value:", fontsize=45, color="white", ha="center", weight="bold")
-        ac.text(0, -0.05, f"${t_v_u:,.2f}", fontsize(85), color="white", ha="center", weight="bold")
+        ac.text(0, -0.05, f"${t_v_u:,.2f}", fontsize=85, color="white", ha="center", weight="bold")
         ac.text(0, -0.25, f"{t_pl_u:+,.2f} ({t_pl_u/t_c_u:+.2%})", fontsize=48, color="#00FF00" if t_pl_u>=0 else "#FF3D00", ha="center", weight="bold")
         # Panneau Droit
         ar = fig4.add_subplot(gs[2]); ar.set_facecolor("#0e1621"); ar.axis('off')
