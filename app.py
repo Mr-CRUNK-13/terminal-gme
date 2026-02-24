@@ -92,18 +92,21 @@ st.markdown("""
 if 'launched' not in st.session_state:
     st.session_state.launched = False
 
-# --- 2. ACCUEIL (INTERFACE WEN MOON - TAILLES AJUSTÉES) ---
+# --- 2. ACCUEIL (INTERFACE WEN MOON - CENTRAGE & TAILLES PARFAITS) ---
 if not st.session_state.launched:
     
     wen_b64 = get_b64('Screenshot_20260216_163106_Discord.jpg')
     
-    # MODIFICATION ICI : Tailles réduites pour rentrer sur l'écran
+    # MODIFICATION ICI : Structure Flexbox avancée pour centrage parfait et tailles égales (90px)
     st.markdown(f"""
     <br>
-    <div style='display:flex; justify-content:center; align-items:center; gap:25px; margin-bottom: 40px;'>
-        <img src='data:image/jpeg;base64,{wen_b64}' style='height:80px; animation: neon-blink-img 1.5s infinite;'>
-        <h1 style='font-size: 70px; margin: 0; animation: neon-blink-text 1.5s infinite; text-align: center; white-space: nowrap;'>TERMINAL GME</h1>
-        <div style='font-size: 80px; animation: rocket-pulse 1s ease-in-out infinite;'>🚀</div>
+    <div style='display:flex; justify-content:center; align-items:center; width: 100%; margin-bottom: 40px;'>
+        <div style='flex: 0 0 150px; display: flex; justify-content: center;'> <img src='data:image/jpeg;base64,{wen_b64}' style='height:90px; animation: neon-blink-img 1.5s infinite;'>
+        </div>
+        <div style='flex: 1; text-align: center; white-space: nowrap; padding: 0 20px;'> <h1 style='font-size: 70px; margin: 0; animation: neon-blink-text 1.5s infinite;'>TERMINAL GME</h1>
+        </div>
+        <div style='flex: 0 0 150px; display: flex; justify-content: center;'> <div style='font-size: 90px; animation: rocket-pulse 1s ease-in-out infinite;'>🚀</div>
+        </div>
     </div>
     """, unsafe_allow_html=True)
     
@@ -223,7 +226,7 @@ else:
         ac.text(-1.1, 0, f"{(v_s_u/t_v_u)*100:.0f}%", fontsize=75, color="black", ha="center", weight="bold")
         ac.text(1.1, 0, f"{(v_w_u/t_v_u)*100:.0f}%", fontsize=75, color="black", ha="center", weight="bold")
         ac.text(0, 0.15, "Total Value:", fontsize=45, color="white", ha="center", weight="bold")
-        ac.text(0, -0.05, f"${t_v_u:,.2f}", fontsize=85, color="white", ha="center", weight="bold")
+        ac.text(0, -0.05, f"${t_v_u:,.2f}", fontsize(85), color="white", ha="center", weight="bold")
         ac.text(0, -0.25, f"{t_pl_u:+,.2f} ({t_pl_u/t_c_u:+.2%})", fontsize=48, color="#00FF00" if t_pl_u>=0 else "#FF3D00", ha="center", weight="bold")
         # Panneau Droit
         ar = fig4.add_subplot(gs[2]); ar.set_facecolor("#0e1621"); ar.axis('off')
