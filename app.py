@@ -81,7 +81,7 @@ st.markdown("""
     #MainMenu, footer, header {visibility: hidden;}
     @keyframes flash { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.05); box-shadow: 0 0 30px #FF3D00; } 100% { opacity: 1; transform: scale(1); } }
     @keyframes rocket-pulse { 0% { transform: translateY(0px) scale(1); } 50% { transform: translateY(-20px) scale(1.15); } 100% { transform: translateY(0px) scale(1); } }
-    @keyframes neon-text { 0%, 100% { color: white; text-shadow: none; } 50% { color: #00FF00; text-shadow: 0 0 10px #00FF00, 0 0 30px #00FF00, 0 0 60px #00FF00, 0 0 90px #00FF00; } }
+    @keyframes neon-text { 0%, 100% { color: white; text-shadow: none; } 50% { color: #00FF00; text-shadow: 0 0 15px #00FF00, 0 0 45px #00FF00, 0 0 90px #00FF00; } }
     @keyframes nuclear-neon { 0%, 100% { filter: drop-shadow(0 0 0 transparent); } 50% { filter: drop-shadow(0 0 20px #00FF00) drop-shadow(0 0 60px #00FF00) drop-shadow(0 0 150px #00FF00); } }
     @keyframes neon-img { 0%, 100% { filter: drop-shadow(0 0 0px transparent); } 50% { filter: drop-shadow(0 0 25px #00FF00); } }
 </style>
@@ -90,7 +90,7 @@ st.markdown("""
 if 'launched' not in st.session_state:
     st.session_state.launched = False
 
-# --- 2. ACCUEIL (INTERFACE V27) ---
+# --- 2. ACCUEIL ---
 if not st.session_state.launched:
     wen_b64 = get_b64('Screenshot_20260216_163106_Discord.jpg')
     st.markdown(f"""
@@ -164,7 +164,17 @@ else:
         diff = price - prev
         clr = "#00FF00" if pct >= 0 else "#FF3D00"
         sz = min(100 + (abs(pct) * 10), 200)
-        icn = f"<div style='font-size:{sz}px; animation:rocket-pulse 1s infinite, neon-text 1.5s infinite;'>🚀</div>" if pct >= 0 else f"<img src='data:image/jpeg;base64,{get_b64('Screenshot_20260216_163106_Discord.jpg')}' style='height:{sz}px; animation:flash 1s infinite;'>"
+        
+        # MODIFICATION : Fusée avec Néon Nucléaire (même que l'accueil) et fix plein écran
+        if pct >= 0:
+            icn = f"""
+            <div style='animation: rocket-pulse 1s ease-in-out infinite;'>
+                <div style='font-size:{sz}px; animation: nuclear-neon 1.5s infinite;'>🚀</div>
+            </div>
+            """
+        else:
+            icn = f"<img src='data:image/jpeg;base64,{get_b64('Screenshot_20260216_163106_Discord.jpg')}' style='height:{sz}px; animation:flash 1s infinite;'>"
+            
         st.markdown(f"<div style='display:flex; justify-content:center; align-items:center; gap:40px; margin-top:30px;'><div style='text-align:right;'><h1 style='font-size:100px; color:{clr}; text-shadow:0 0 20px {clr}; margin:0;'>${price:.2f}</h1><h3 style='color:{clr}; margin:0;'>${diff:+.2f} {pct:+.2f}%</h3></div>{icn}</div>", unsafe_allow_html=True)
         if not chart.empty:
             fig, ax = plt.subplots(figsize=(10, 2.5), facecolor='black'); ax.set_facecolor('black')
