@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import yfinance as yf
 import pandas as pd
 import numpy as np
@@ -9,6 +10,34 @@ from datetime import datetime
 
 # --- 1. CONFIGURATION ---
 st.set_page_config(page_title="TERMINAL GME", page_icon="Screenshot_20260216_163106_Discord.jpg", layout="wide", initial_sidebar_state="collapsed")
+
+# --- INJECTION DU MANIFESTE (MODE STANDALONE POUR PLEIN ÉCRAN SUR TABLETTE) ---
+components.html(
+    """
+    <script>
+    const parentHead = window.parent.document.querySelector('head');
+    if (!window.parent.document.querySelector('#pwa-manifest')) {
+        parentHead.insertAdjacentHTML('beforeend', '<meta name="apple-mobile-web-app-capable" content="yes">');
+        parentHead.insertAdjacentHTML('beforeend', '<meta name="mobile-web-app-capable" content="yes">');
+        parentHead.insertAdjacentHTML('beforeend', '<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">');
+        
+        const manifest = {
+            "name": "TERMINAL GME",
+            "short_name": "GME",
+            "start_url": window.parent.location.href,
+            "display": "standalone",
+            "background_color": "#050505",
+            "theme_color": "#050505"
+        };
+        const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
+        const manifestURL = URL.createObjectURL(blob);
+        parentHead.insertAdjacentHTML('beforeend', '<link id="pwa-manifest" rel="manifest" href="' + manifestURL + '">');
+    }
+    </script>
+    """,
+    height=0,
+    width=0,
+)
 
 st.markdown("""
 <style>
