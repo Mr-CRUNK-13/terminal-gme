@@ -18,7 +18,6 @@ components.html(
     const parent = window.parent.document;
     const head = parent.querySelector('head');
     
-    // 1. PWA Meta tags (Forcer le mode fullscreen)
     if (!parent.querySelector('#pwa-manifest')) {
         head.insertAdjacentHTML('beforeend', '<meta name="apple-mobile-web-app-capable" content="yes">');
         head.insertAdjacentHTML('beforeend', '<meta name="mobile-web-app-capable" content="yes">');
@@ -33,11 +32,10 @@ components.html(
         head.insertAdjacentHTML('beforeend', '<link id="pwa-manifest" rel="manifest" href="' + URL.createObjectURL(blob) + '">');
     }
 
-    // 2. Création du Bouton Plein Écran (Style Terminal Néon)
     if (!parent.getElementById('btn-fullscreen')) {
         const btn = parent.createElement('button');
         btn.id = 'btn-fullscreen';
-        btn.innerText = '⛶'; // Icône Plein Écran
+        btn.innerText = '⛶';
         btn.style.position = 'fixed';
         btn.style.bottom = '70px';
         btn.style.right = '20px';
@@ -72,7 +70,6 @@ components.html(
     width=0,
 )
 
-# Fonction d'encodage d'image globale
 def get_b64(path):
     try:
         with open(path, "rb") as f: return base64.b64encode(f.read()).decode()
@@ -86,36 +83,38 @@ st.markdown("""
     @keyframes rocket-pulse { 0% { transform: translateY(0px) scale(1); } 50% { transform: translateY(-20px) scale(1.15); } 100% { transform: translateY(0px) scale(1); } }
     
     /* Néon standard pour le texte */
-    @keyframes neon-blink-text { 0%, 100% { color: white; text-shadow: none; } 50% { color: #00FF00; text-shadow: 0 0 15px #00FF00, 0 0 45px #00FF00, 0 0 90px #00FF00, 0 0 140px #00FF00; } }
+    @keyframes neon-text { 0%, 100% { color: white; text-shadow: none; } 50% { color: #00FF00; text-shadow: 0 0 15px #00FF00, 0 0 45px #00FF00, 0 0 90px #00FF00; } }
     
-    /* NOUVEAU : Néon ULTRA-LARGE spécifique pour la fusée (valeurs doublées) */
-    @keyframes neon-blink-rocket { 0%, 100% { color: white; text-shadow: none; } 50% { color: #00FF00; text-shadow: 0 0 30px #00FF00, 0 0 90px #00FF00, 0 0 180px #00FF00, 0 0 280px #00FF00; } }
+    /* NOUVEAU : Néon "Nucléaire" ultra-large à base de drop-shadow pour la fusée */
+    @keyframes nuclear-neon { 0%, 100% { filter: drop-shadow(0 0 0 transparent); } 50% { filter: drop-shadow(0 0 20px #00FF00) drop-shadow(0 0 60px #00FF00) drop-shadow(0 0 150px #00FF00); } }
     
     /* Néon pour l'image */
-    @keyframes neon-blink-img { 0%, 100% { filter: drop-shadow(0 0 0px transparent); } 50% { filter: drop-shadow(0 0 25px #00FF00); } }
+    @keyframes neon-img { 0%, 100% { filter: drop-shadow(0 0 0px transparent); } 50% { filter: drop-shadow(0 0 25px #00FF00); } }
 </style>
 """, unsafe_allow_html=True)
 
 if 'launched' not in st.session_state:
     st.session_state.launched = False
 
-# --- 2. ACCUEIL (INTERFACE WEN MOON - V23 FIX FUSÉE) ---
+# --- 2. ACCUEIL (INTERFACE WEN MOON - V24 FIX FINAL) ---
 if not st.session_state.launched:
     
     wen_b64 = get_b64('Screenshot_20260216_163106_Discord.jpg')
     
-    # MODIFICATION ICI : Utilisation du nouveau néon ultra-large + combinaison des animations sur le même div pour le fix plein écran
+    # Architecture robuste (séparation mouvement/lumière) et néon nucléaire pour la fusée
     st.markdown(f"""
     <br>
     <div style='display:flex; justify-content:center; align-items:center; width: 100%; margin-bottom: 40px;'>
         <div style='flex: 0 0 180px; display: flex; justify-content: center; align-items: center;'>
-            <img src='data:image/jpeg;base64,{wen_b64}' style='height:130px; animation: neon-blink-img 1.5s infinite;'>
+            <img src='data:image/jpeg;base64,{wen_b64}' style='height:130px; animation: neon-img 1.5s infinite;'>
         </div>
         <div style='flex: 1; text-align: center; white-space: nowrap; padding: 0 10px; display: flex; justify-content: center; align-items: center;'>
-            <h1 style='font-size: 70px; margin: 0; line-height: 1; padding-top: 25px; animation: neon-blink-text 1.5s infinite;'>TERMINAL GME</h1>
+            <h1 style='font-size: 70px; margin: 0; line-height: 1; padding-top: 25px; animation: neon-text 1.5s infinite;'>TERMINAL GME</h1>
         </div>
         <div style='flex: 0 0 180px; display: flex; justify-content: center; align-items: center;'>
-            <div style='font-size: 90px; animation: neon-blink-rocket 1.5s infinite, rocket-pulse 1s ease-in-out infinite;'>🚀</div>
+            <div style='animation: rocket-pulse 1s ease-in-out infinite;'>
+                <div style='font-size: 90px; animation: nuclear-neon 1.5s infinite;'>🚀</div>
+            </div>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -143,7 +142,7 @@ if not st.session_state.launched:
         st.session_state.update(qn=gme_ny_qty, pn=gme_ny_pru, qw=wt_qty, pw=wt_pru, qx=xet_qty, px=xet_pru, qt=tdg_qty, pt=tdg_pru, gp=global_pru, launched=True)
         st.rerun()
     
-    st.markdown("<h4 style='text-align: right; margin-top: 30px; font-family: monospace; animation: neon-blink-text 1.5s infinite;'>By Mr-CRUNK-13</h4>", unsafe_allow_html=True)
+    st.markdown("<h4 style='text-align: right; margin-top: 30px; font-family: monospace; animation: neon-text 1.5s infinite;'>By Mr-CRUNK-13</h4>", unsafe_allow_html=True)
 
 # --- 3. TERMINAL ---
 else:
@@ -172,13 +171,19 @@ else:
 
     tab1, tab2, tab3, tab4, tab5 = st.tabs(["📊 GME", "📜 WARRANTS", "🇪🇺 EU", "🇺🇸 US", "📋 DATA"])
 
-    # --- ECRAN 1 & 2 ---
+    # --- ECRAN 1 & 2 (CORRIGÉS : REVIENT À LA TAILLE STANDARD POUR L'IMAGE WEN) ---
     def draw_live(price, prev, chart, title):
         pct = ((price - prev) / prev) * 100
+        diff = price - prev # Calcul de la différence en valeur
         clr = "#00FF00" if pct >= 0 else "#FF3D00"
         sz = min(100 + (abs(pct) * 10), 200)
-        icn = f"<div style='font-size:{sz}px; animation:rocket-pulse 1s infinite;'>🚀</div>" if pct >= 0 else f"<img src='data:image/jpeg;base64,{get_b64('Screenshot_20260216_163106_Discord.jpg')}' style='height:{sz}px; animation:flash 1s infinite;'>"
-        st.markdown(f"<div style='display:flex; justify-content:center; align-items:center; gap:40px; margin-top:30px;'><div style='text-align:right;'><h1 style='font-size:100px; color:{clr}; text-shadow:0 0 20px {clr}; margin:0;'>${price:.2f}</h1><h3 style='color:{clr}; margin:0;'>{pct:+.2f}%</h3></div>{icn}</div>", unsafe_allow_html=True)
+        
+        # Icône : Fusée avec néon si hausse, Image WEN taille standard ({sz}px) si baisse
+        icn = f"<div style='font-size:{sz}px; animation:rocket-pulse 1s infinite, neon-text 1.5s infinite;'>🚀</div>" if pct >= 0 else f"<img src='data:image/jpeg;base64,{get_b64('Screenshot_20260216_163106_Discord.jpg')}' style='height:{sz}px; animation:flash 1s infinite;'>"
+        
+        # Affichage : Ajout de la différence en valeur (${diff:+.2f}) avant le pourcentage
+        st.markdown(f"<div style='display:flex; justify-content:center; align-items:center; gap:40px; margin-top:30px;'><div style='text-align:right;'><h1 style='font-size:100px; color:{clr}; text-shadow:0 0 20px {clr}; margin:0;'>${price:.2f}</h1><h3 style='color:{clr}; margin:0;'>${diff:+.2f} {pct:+.2f}%</h3></div>{icn}</div>", unsafe_allow_html=True)
+        
         if not chart.empty:
             fig, ax = plt.subplots(figsize=(10, 2.5), facecolor='black'); ax.set_facecolor('black')
             v = chart.dropna().values
@@ -228,7 +233,7 @@ else:
         al.text(0.9, 0.70, f"Val: ${v_s_u:,.2f}", color="white", fontsize=63, ha="right", weight="bold")
         al.text(0.9, 0.55, f"Qty: {total_shares:,} | Price: ${p_nsy:.2f}", color="#00FF00" if pl_s_u>=0 else "#FF3D00", fontsize=84, ha="right", weight="bold")
         al.text(0.9, 0.40, f"Avg Cost: ${gp:.2f}", color="white", fontsize=63, ha="right", weight="bold")
-        al.text(0.9, 0.25, f"P/L: {pl_s_u:+,.2f} ({pl_s_u/(total_shares*gp):+.2%})", color="#00FF00" if pl_s_u>=0 else "#FF3D00", fontsize=84, ha="right", weight="bold")
+        al.text(0.9, 0.25, f"P/L: {pl_s_u:+,.2f} ({pl_s_u/(total_shares*gp):+.2%})", color="#00FF00" if pl_s_u>=0 else "#FF3D00", fontsize(84, ha="right", weight="bold")
         al.annotate("", xy=(0.95, 0.5), xytext=(1.28, 0.5), arrowprops=dict(arrowstyle="->", color="#00FF00" if pl_s_u>=0 else "#FF3D00", lw=20))
         # Donut Centre
         ac = fig4.add_subplot(gs[1]); ac.set_facecolor("#0e1621")
@@ -244,7 +249,7 @@ else:
         ar.text(0.1, 0.70, f"Val: ${v_w_u:,.2f}", color="white", fontsize=63, ha="left", weight="bold")
         ar.text(0.1, 0.55, f"Qty: {qw:,} | Price: ${p_wt:.2f}", color="#00FF00" if pl_w_u>=0 else "#FF3D00", fontsize=84, ha="left", weight="bold")
         ar.text(0.1, 0.40, f"Avg Cost: ${pw:.3f}", color="white", fontsize=63, ha="left", weight="bold")
-        ar.text(0.1, 0.25, f"P/L: {pl_w_u:+,.2f} ({pl_w_u/(qw*pw):+.2%})", color="#00FF00" if pl_w_u>=0 else "#FF3D00", fontsize=84, ha="left", weight="bold")
+        ar.text(0.1, 0.25, f"P/L: {pl_w_u:+,.2f} ({pl_w_u/(qw*pw):+.2%})", color="#00FF00" if pl_w_u>=0 else "#FF3D00", fontsize(84, ha="left", weight="bold")
         ar.annotate("", xy=(0.08, 0.5), xytext=(-0.19, 0.5), arrowprops=dict(arrowstyle="->", color="#006400", lw=20))
         st.pyplot(fig4)
 
