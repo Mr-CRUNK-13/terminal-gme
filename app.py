@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import base64
 
 # --- 1. CONFIGURATION ---
-st.set_page_config(page_title="TERMINAL GME", layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="TERMINAL GME", page_icon="Screenshot_20260216_163106_Discord.jpg", layout="wide", initial_sidebar_state="collapsed")
 
 st.markdown("""
 <style>
