@@ -19,24 +19,18 @@ st.markdown("""
         box-shadow: 0px 0px 20px #00FF00; margin-top: 30px;
     }
     
+    /* Animation Image WEN Moon (Clignote en rouge) */
     @keyframes flash {
         0% { opacity: 1; transform: scale(1); }
-        50% { opacity: 0.4; transform: scale(1.05); }
+        50% { opacity: 0.4; transform: scale(1.05); box-shadow: 0 0 30px #FF3D00; }
         100% { opacity: 1; transform: scale(1); }
     }
     
-    @keyframes float {
-        0% { transform: translateY(0px); }
-        50% { transform: translateY(-10px); }
-        100% { transform: translateY(0px); }
-    }
-    
-    @keyframes flicker {
-        0% { opacity: 1; transform: scale(1) translateY(0); }
-        25% { opacity: 0.8; transform: scale(1.1) translateY(2px); }
-        50% { opacity: 1; transform: scale(0.9) translateY(-2px); }
-        75% { opacity: 0.9; transform: scale(1.2) translateY(4px); }
-        100% { opacity: 1; transform: scale(1) translateY(0); }
+    /* NOUVELLE Animation Fusée (Pulsation de décollage) */
+    @keyframes rocket-pulse {
+        0% { transform: translateY(0px) scale(1); }
+        50% { transform: translateY(-20px) scale(1.15); } /* Monte et grossit fortement */
+        100% { transform: translateY(0px) scale(1); }
     }
 </style>
 """, unsafe_allow_html=True)
@@ -103,18 +97,20 @@ else:
     ticker_color = "#00FF00" if gme_change_pct >= 0 else "#FF3D00"
     sign = "+" if gme_change_pct >= 0 else ""
     
+    # MOTEUR DYNAMIQUE SIMPLIFIÉ ET ROBUSTE
     abs_pct = abs(gme_change_pct)
-    icon_size = min(90 + (abs_pct * 8), 180)
-    anim_speed = max(2.0 - (abs_pct * 0.15), 0.3)
-    flame_size = min(40 + (abs_pct * 12), 160)
-    flame_speed = max(0.8 - (abs_pct * 0.1), 0.1)
+    # Taille de base 100px, augmente avec la volatilité
+    icon_size = min(100 + (abs_pct * 10), 200)
+    # Vitesse : plus le % est haut, plus anim_speed est petit (donc rapide)
+    anim_speed = max(1.5 - (abs_pct * 0.1), 0.4)
     
     tab1, tab2, tab3, tab4, tab5 = st.tabs(["📊 GME", "📜 WARRANTS", "🇪🇺 EU", "🇺🇸 US", "📋 DATA"])
     
     with tab1:
-        # Code aplati pour éviter que Streamlit ne le lise comme du texte brut
+        # Affichage propre sur une seule ligne de code
         if gme_change_pct >= 0:
-            icon_html = f"<div style='text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: -30px;'><div style='font-size: {icon_size}px; animation: float {anim_speed}s ease-in-out infinite; z-index: 2; line-height: 1;'>🚀</div><div style='font-size: {flame_size}px; animation: flicker {flame_speed}s infinite alternate; margin-top: -{icon_size * 0.2}px; z-index: 1; line-height: 1;'>🔥</div></div>"
+            # Une seule fusée qui pulse puissamment
+            icon_html = f"<div style='font-size: {icon_size}px; animation: rocket-pulse {anim_speed}s ease-in-out infinite; line-height: 1; text-shadow: 0 0 30px #00FF00;'>🚀</div>"
         else:
             img_b64 = get_image_base64("Screenshot_20260216_163106_Discord.jpg")
             if img_b64:
@@ -127,17 +123,13 @@ else:
         if not chart_data.empty:
             fig, ax = plt.subplots(figsize=(10, 2.5), facecolor='#050505')
             ax.set_facecolor('#050505')
-            
             prices = chart_data.values
             x_pos = np.arange(len(prices))
             min_y = np.min(prices) * 0.99
-            
             ax.bar(x_pos, prices - min_y, bottom=min_y, color=ticker_color, width=0.8, edgecolor='none')
-            
             ax.axis('off')
             ax.set_xlim(-1, len(prices))
             ax.set_ylim(min_y, np.max(prices) * 1.01)
-            
             plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
             st.pyplot(fig)
 
