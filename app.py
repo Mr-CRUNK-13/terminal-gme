@@ -11,7 +11,7 @@ from datetime import datetime
 # --- 1. CONFIGURATION ---
 st.set_page_config(page_title="TERMINAL GME", page_icon="Screenshot_20260216_163106_Discord.jpg", layout="wide", initial_sidebar_state="collapsed")
 
-# --- INJECTION DU MANIFESTE & BOUTON PLEIN ÉCRAN FLOTTANT ---
+# --- INJECTION DU MANIFESTE & BOUTON PLEIN ÉCRAN FLOTTANT (POSITION CORRIGÉE) ---
 components.html(
     """
     <script>
@@ -39,7 +39,8 @@ components.html(
         btn.id = 'btn-fullscreen';
         btn.innerText = '⛶'; // Icône Plein Écran
         btn.style.position = 'fixed';
-        btn.style.bottom = '20px';
+        // MODIFICATION ICI : Passage de 20px à 70px pour éviter "Manage app"
+        btn.style.bottom = '70px';
         btn.style.right = '20px';
         btn.style.zIndex = '99999';
         btn.style.background = '#050505';
@@ -110,7 +111,6 @@ if not st.session_state.launched:
         st.session_state.update(qn=gme_ny_qty, pn=gme_ny_pru, qw=wt_qty, pw=wt_pru, qx=xet_qty, px=xet_pru, qt=tdg_qty, pt=tdg_pru, gp=global_pru, launched=True)
         st.rerun()
     
-    # --- SIGNATURE AJOUTÉE ICI ---
     st.markdown("<h4 style='text-align: right; color: white; margin-top: 30px; font-family: monospace; opacity: 0.7;'>By Mr-CRUNK-13</h4>", unsafe_allow_html=True)
 
 
@@ -180,7 +180,7 @@ else:
             s = "+" if ple >= 0 else "-"
             return f"{name}\nVal: €{eur:,.2f} ({eur/total_e:.1%})\n     ${eur*fx:,.2f}\nQty: {qty} | Cours: {sym}{crs:.2f}\nPRU: {psym}{pru:.3f}\nP/L: {s}€{abs(ple):,.2f} ({s}{abs(pct):.2f}%)\n     {s}${abs(ple*fx):,.2f}"
 
-        txts = {"NSY": build_l("Action GME (NYSE)",vne,qn,p_nsy,"$",pn,"$",pl_n,(pl_n/(vne-pl_n))*100), "Warrant": build_l("Warrant (NSY)",vwe,qw,p_wt,"$",pw,"$",pl_w,(pl_w/(vwe-pl_w))*100), "XET": build_l("Action GME (XET)",vxe,qx,p_xet,"€",px,"€",pl_x,(pl_x/(vxe-pl_x))*100), "TDG": build_l("Action GME (TDG)",vte,qt,p_xet,"€",pt,"€",pl_t,(pl_t/(vte-pl_t))*100)}
+        txts = {"NSY": build_l("Action GME (NYSE)",vne,qn,p_nsy,"$",pn,"$",pl_n,(pl_n/(vne-pl_n))*100 if (vne-pl_n)!=0 else 0), "Warrant": build_l("Warrant (NSY)",vwe,qw,p_wt,"$",pw,"$",pl_w,(pl_w/(vwe-pl_w))*100 if (vwe-pl_w)!=0 else 0), "XET": build_l("Action GME (XET)",vxe,qx,p_xet,"€",px,"€",pl_x,(pl_x/(vxe-pl_x))*100 if (vxe-pl_x)!=0 else 0), "TDG": build_l("Action GME (TDG)",vte,qt,p_xet,"€",pt,"€",pl_t,(pl_t/(vte-pl_t))*100 if (vte-pl_t)!=0 else 0)}
         pos = {"NSY": (-2.24, 0.8), "Warrant": (-2.24, -0.8), "XET": (2.15, 0.8), "TDG": (2.15, -0.8)}
         for i, k in enumerate(["XET", "NSY", "Warrant", "TDG"]):
             p = wedges[i]; ang = (p.theta2 - p.theta1)/2. + p.theta1
@@ -210,7 +210,7 @@ else:
         ac.text(-1.1, 0, f"{(v_s_u/t_v_u)*100:.0f}%", fontsize=75, color="black", ha="center", weight="bold")
         ac.text(1.1, 0, f"{(v_w_u/t_v_u)*100:.0f}%", fontsize=75, color="black", ha="center", weight="bold")
         ac.text(0, 0.15, "Total Value:", fontsize=45, color="white", ha="center", weight="bold")
-        ac.text(0, -0.05, f"${t_v_u:,.2f}", fontsize=85, color="white", ha="center", weight="bold")
+        ac.text(0, -0.05, f"${t_v_u:,.2f}", fontsize(85), color="white", ha="center", weight="bold")
         ac.text(0, -0.25, f"{t_pl_u:+,.2f} ({t_pl_u/t_c_u:+.2%})", fontsize=48, color="#00FF00" if t_pl_u>=0 else "#FF3D00", ha="center", weight="bold")
         # Panneau Droit
         ar = fig4.add_subplot(gs[2]); ar.set_facecolor("#0e1621"); ar.axis('off')
