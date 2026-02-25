@@ -113,7 +113,7 @@ st.markdown("""
         display: inline;
     }
 
-    /* --- BOUCLIER V39 : S'ACTIVE UNIQUEMENT EN PORTRAIT ET SI LE BOUTON PLEIN ECRAN A ETE CLIQUÉ --- */
+    /* --- BOUCLIER V40 : S'ACTIVE UNIQUEMENT EN PORTRAIT ET SI LE BOUTON PLEIN ECRAN A ETE CLIQUÉ --- */
     @media screen and (orientation: portrait) {
         body.is-fullscreen .title-text {
             font-size: 35px !important; /* Taille réduite de moitié */
@@ -126,10 +126,18 @@ st.markdown("""
             height: 15px !important; /* Crée l'espace physique entre TERMINAL et GME */
             content: " ";
         }
-        /* LA MODIFICATION EST ICI : PADDING A ZERO */
-        body.is-fullscreen .main .block-container {
-            padding-top: 0rem !important; /* SUPPRESSION TOTALE DE LA MARGE HAUTE */
-            padding-bottom: 0rem !important; /* Optimisation marge basse */
+        
+        /* LA MODIFICATION CHIRURGICALE EST ICI : ASPIRATION DE LA MARGE HAUTE */
+        body.is-fullscreen .main .block-container,
+        body.is-fullscreen [data-testid="stAppViewBlockContainer"] {
+            padding-top: 0px !important; 
+            padding-bottom: 0px !important; 
+            margin-top: -60px !important; /* Force tout le bloc à remonter, écrasant la marge fantôme */
+        }
+        
+        /* On réduit aussi la marge sous l'en-tête pour gagner les derniers pixels */
+        body.is-fullscreen div[style*='margin-bottom: 40px'] {
+            margin-bottom: 10px !important; 
         }
     }
 </style>
@@ -273,7 +281,7 @@ else:
         ar.text(0.1, 0.70, f"Val: ${v_w_u:,.2f}", color="white", fontsize=63, ha="left", weight="bold")
         ar.text(0.1, 0.55, f"Qty: {qw:,} | Price: ${p_wt:.2f}", color="#00FF00" if pl_w_u>=0 else "#FF0000", fontsize=84, ha="left", weight="bold")
         ar.text(0.1, 0.40, f"Avg Cost: ${pw:.3f}", color="white", fontsize=63, ha="left", weight="bold")
-        ar.text(0.1, 0.25, f"P/L: {pl_w_u:+,.2f} ({pl_w_u/(qw*pw):+.2%})", color="#00FF00" if pl_w_u>=0 else "#FF0000", fontsize=84, ha="left", weight="bold")
+        ar.text(0.1, 0.25, f"P/L: ${pl_w_u:+,.2f} ({pl_w_u/(qw*pw):+.2%})", color="#00FF00" if pl_w_u>=0 else "#FF0000", fontsize=84, ha="left", weight="bold")
         ar.annotate("", xy=(0.08, 0.5), xytext=(-0.19, 0.5), arrowprops=dict(arrowstyle="->", color="#006400", lw=20))
         st.pyplot(fig4)
 
@@ -290,6 +298,6 @@ else:
                 if r == 4 and c not in [0, 4, 5, 6]: cell.set_facecolor("#0f172a"); cell.set_edgecolor("#0f172a"); continue
                 cell.set_facecolor("#0259c7"); cell.get_text().set_color("white"); cell.get_text().set_fontweight('bold')
                 if c in [1, 3, 5]: cell.get_text().set_color("#00FF00"); cell.get_text().set_fontsize(14)
-                elif c == 6: cell.get_text().set_color("#00FF00" if (v_s_u-total_shares*gp if r==1 else v_w_u-qw*pw if r==2 else t_pl_u)>=0 else "#FF0000"); cell.get_text().set_fontsize(14)
+                elif c == 6: cell.get_text().set_color("#00FF00" if (v_s_u-total_shares*gp if r==1 else v_w_u-qw*pw if r==2 else t_pl_u)>=0 else "#ef4444"); cell.get_text().set_fontsize(14)
             else: cell.set_facecolor("#0f172a"); cell.set_edgecolor("#0f172a")
         st.pyplot(fig5)
