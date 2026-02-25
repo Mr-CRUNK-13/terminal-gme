@@ -11,7 +11,7 @@ from datetime import datetime
 # --- 1. CONFIGURATION ---
 st.set_page_config(page_title="TERMINAL GME", page_icon="Screenshot_20260216_163106_Discord.jpg", layout="wide", initial_sidebar_state="collapsed")
 
-# --- INJECTION DU MANIFESTE & BOUTON PLEIN ÉCRAN FLOTTANT (POSITION CORRIGÉE) ---
+# --- INJECTION DU MANIFESTE & BOUTON PLEIN ÉCRAN FLOTTANT ---
 components.html(
     """
     <script>
@@ -85,6 +85,27 @@ st.markdown("""
     @keyframes nuclear-neon { 0%, 100% { filter: drop-shadow(0 0 0 transparent); } 50% { filter: drop-shadow(0 0 20px #00FF00) drop-shadow(0 0 60px #00FF00) drop-shadow(0 0 150px #00FF00); } }
     @keyframes nuclear-red-img { 0%, 100% { filter: drop-shadow(0 0 0 transparent); } 50% { filter: drop-shadow(0 0 20px #FF0000) drop-shadow(0 0 70px #FF0000) drop-shadow(0 0 150px #FF0000); } }
     @keyframes neon-img { 0%, 100% { filter: drop-shadow(0 0 0px transparent); } 50% { filter: drop-shadow(0 0 25px #00FF00); } }
+
+    /* --- NOUVEAU : CIBLAGE PLEIN ÉCRAN VERTICAL (PORTRAIT) UNIQUEMENT --- */
+    /* Le span est invisible par défaut */
+    .mobile-break { display: none; }
+
+    /* Quand on est en plein écran ET en portrait */
+    @media screen and (orientation: portrait) and (:fullscreen),
+           screen and (orientation: portrait) and (-webkit-full-screen) {
+        /* On réduit drastiquement la taille du titre H1 */
+        .stMarkdown h1 {
+            font-size: 40px !important;
+            line-height: 1.2 !important;
+            padding-top: 10px !important;
+        }
+        /* On transforme le span en saut de ligne avec marge */
+        .mobile-break {
+            display: block !important;
+            margin-top: 15px;
+            content: " ";
+        }
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -94,6 +115,7 @@ if 'launched' not in st.session_state:
 # --- 2. ACCUEIL (INTERFACE WEN MOON) ---
 if not st.session_state.launched:
     wen_b64 = get_b64('Screenshot_20260216_163106_Discord.jpg')
+    # MODIFICATION ICI : Ajout du span 'mobile-break' invisible entre TERMINAL et GME
     st.markdown(f"""
     <br>
     <div style='display:flex; justify-content:center; align-items:center; width: 100%; margin-bottom: 40px;'>
@@ -101,7 +123,7 @@ if not st.session_state.launched:
             <img src='data:image/jpeg;base64,{wen_b64}' style='height:130px; animation: neon-img 1.5s infinite;'>
         </div>
         <div style='flex: 1; text-align: center; white-space: nowrap; padding: 0 10px; display: flex; justify-content: center; align-items: center;'>
-            <h1 style='font-size: 70px; margin: 0; line-height: 1; padding-top: 25px; animation: neon-text 1.5s infinite;'>TERMINAL GME</h1>
+            <h1 style='font-size: 70px; margin: 0; line-height: 1; padding-top: 25px; animation: neon-text 1.5s infinite;'>TERMINAL<span class='mobile-break'></span>GME</h1>
         </div>
         <div style='flex: 0 0 180px; display: flex; justify-content: center; align-items: center;'>
             <div style='animation: rocket-pulse 1s ease-in-out infinite;'>
@@ -224,7 +246,7 @@ else:
         ar.text(0.1, 0.70, f"Val: ${v_w_u:,.2f}", color="white", fontsize=63, ha="left", weight="bold")
         ar.text(0.1, 0.55, f"Qty: {qw:,} | Price: ${p_wt:.2f}", color="#00FF00" if pl_w_u>=0 else "#FF0000", fontsize=84, ha="left", weight="bold")
         ar.text(0.1, 0.40, f"Avg Cost: ${pw:.3f}", color="white", fontsize=63, ha="left", weight="bold")
-        ar.text(0.1, 0.25, f"P/L: ${pl_w_u:+,.2f} ({pl_w_u/(qw*pw):+.2%})", color="#00FF00" if pl_w_u>=0 else "#FF0000", fontsize=84, ha="left", weight="bold")
+        ar.text(0.1, 0.25, f"P/L: {pl_w_u:+,.2f} ({pl_w_u/(qw*pw):+.2%})", color="#00FF00" if pl_w_u>=0 else "#FF0000", fontsize=84, ha="left", weight="bold")
         ar.annotate("", xy=(0.08, 0.5), xytext=(-0.19, 0.5), arrowprops=dict(arrowstyle="->", color="#006400", lw=20))
         st.pyplot(fig4)
 
