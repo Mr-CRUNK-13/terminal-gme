@@ -32,7 +32,7 @@ components.html(
         head.insertAdjacentHTML('beforeend', '<link id="pwa-manifest" rel="manifest" href="' + URL.createObjectURL(blob) + '">');
     }
 
-    // NOUVEAU : Traqueur d'état Plein Écran infaillible
+    // Traqueur d'état Plein Écran infaillible via une classe sur le BODY
     const handleFsChange = () => {
         if (parent.fullscreenElement || parent.webkitFullscreenElement || parent.msFullscreenElement) {
             parent.body.classList.add('is-fullscreen');
@@ -113,7 +113,7 @@ st.markdown("""
         display: inline;
     }
 
-    /* --- BOUCLIER V38 : S'ACTIVE UNIQUEMENT EN PORTRAIT ET SI LE BOUTON PLEIN ECRAN A ETE CLIQUÉ --- */
+    /* --- BOUCLIER V39 : S'ACTIVE UNIQUEMENT EN PORTRAIT ET SI LE BOUTON PLEIN ECRAN A ETE CLIQUÉ --- */
     @media screen and (orientation: portrait) {
         body.is-fullscreen .title-text {
             font-size: 35px !important; /* Taille réduite de moitié */
@@ -126,8 +126,10 @@ st.markdown("""
             height: 15px !important; /* Crée l'espace physique entre TERMINAL et GME */
             content: " ";
         }
+        /* LA MODIFICATION EST ICI : PADDING A ZERO */
         body.is-fullscreen .main .block-container {
-            padding-top: 1rem !important; /* Remonte l'interface pour que tout rentre */
+            padding-top: 0rem !important; /* SUPPRESSION TOTALE DE LA MARGE HAUTE */
+            padding-bottom: 0rem !important; /* Optimisation marge basse */
         }
     }
 </style>
@@ -271,7 +273,7 @@ else:
         ar.text(0.1, 0.70, f"Val: ${v_w_u:,.2f}", color="white", fontsize=63, ha="left", weight="bold")
         ar.text(0.1, 0.55, f"Qty: {qw:,} | Price: ${p_wt:.2f}", color="#00FF00" if pl_w_u>=0 else "#FF0000", fontsize=84, ha="left", weight="bold")
         ar.text(0.1, 0.40, f"Avg Cost: ${pw:.3f}", color="white", fontsize=63, ha="left", weight="bold")
-        ar.text(0.1, 0.25, f"P/L: ${pl_w_u:+,.2f} ({pl_w_u/(qw*pw):+.2%})", color="#00FF00" if pl_w_u>=0 else "#FF0000", fontsize=84, ha="left", weight="bold")
+        ar.text(0.1, 0.25, f"P/L: {pl_w_u:+,.2f} ({pl_w_u/(qw*pw):+.2%})", color="#00FF00" if pl_w_u>=0 else "#FF0000", fontsize=84, ha="left", weight="bold")
         ar.annotate("", xy=(0.08, 0.5), xytext=(-0.19, 0.5), arrowprops=dict(arrowstyle="->", color="#006400", lw=20))
         st.pyplot(fig4)
 
