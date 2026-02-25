@@ -86,21 +86,37 @@ st.markdown("""
     @keyframes nuclear-red-img { 0%, 100% { filter: drop-shadow(0 0 0 transparent); } 50% { filter: drop-shadow(0 0 20px #FF0000) drop-shadow(0 0 70px #FF0000) drop-shadow(0 0 150px #FF0000); } }
     @keyframes neon-img { 0%, 100% { filter: drop-shadow(0 0 0px transparent); } 50% { filter: drop-shadow(0 0 25px #00FF00); } }
 
-    /* --- CIBLAGE CHIRURGICAL V35 : UNIQUEMENT MOBILE PORTRAIT PLEIN ÉCRAN --- */
+    /* --- CIBLAGE ULTIME V36 : UNIQUEMENT MOBILE PORTRAIT PLEIN ÉCRAN --- */
     @media screen and (orientation: portrait) and (:fullscreen),
            screen and (orientation: portrait) and (-webkit-full-screen) {
         
-        /* Ciblage précis du H1 dans le conteneur central de l'accueil */
-        .stMarkdown div[style*='flex: 1; text-align: center'] h1 {
-            /* 1. Réduction drastique de la taille pour que ça rentre dans l'écran */
-            font-size: 32px !important;
+        /* 1. FIX GLOBAL OVERFLOW : Réduire drastiquement le padding vertical de l'app */
+        .main .block-container {
+            padding-top: 1rem !important;
+            padding-bottom: 1rem !important;
+        }
 
-            /* 2. Ajout d'un très grand espace (30px) entre les mots TERMINAL et GME */
-            word-spacing: 30px !important;
+        /* 2. CIBLAGE DU CONTENEUR TITRE VIA LA CLASSE AJOUTÉE */
+        .title-container {
+            /* On autorise le texte à passer à la ligne */
+            white-space: normal !important;
+            /* On s'assure que les éléments flexibles peuvent wrapper */
+            flex-wrap: wrap !important;
+        }
 
-            /* 3. Réajustement de l'alignement vertical suite au changement de taille */
-            line-height: 1.4 !important;
-            padding-top: 15px !important;
+        /* 3. CIBLAGE ET MODIFICATION DU TITRE H1 */
+        .title-container h1 {
+            /* Taille réduite */
+            font-size: 40px !important;
+            /* Astuce ultime pour forcer le saut de ligne entre les mots */
+            word-spacing: 9999px !important;
+            /* Centrage */
+            text-align: center !important;
+            line-height: 1.1 !important;
+            padding-top: 5px !important;
+            /* Largeur 100% pour occuper l'espace et permettre le centrage */
+            width: 100% !important;
+            display: block !important;
         }
     }
 </style>
@@ -109,17 +125,17 @@ st.markdown("""
 if 'launched' not in st.session_state:
     st.session_state.launched = False
 
-# --- 2. ACCUEIL (INTERFACE WEN MOON - HTML STRICTEMENT V32) ---
+# --- 2. ACCUEIL (INTERFACE WEN MOON - Ajout de class='title-container') ---
 if not st.session_state.launched:
     wen_b64 = get_b64('Screenshot_20260216_163106_Discord.jpg')
-    # HTML IDENTIQUE À LA VERSION PARFAITE PRECEDENTE
+    # SEULE MODIF HTML : Ajout de la classe 'title-container' au div central
     st.markdown(f"""
     <br>
     <div style='display:flex; justify-content:center; align-items:center; width: 100%; margin-bottom: 40px;'>
         <div style='flex: 0 0 180px; display: flex; justify-content: center; align-items: center;'>
             <img src='data:image/jpeg;base64,{wen_b64}' style='height:130px; animation: neon-img 1.5s infinite;'>
         </div>
-        <div style='flex: 1; text-align: center; white-space: nowrap; padding: 0 10px; display: flex; justify-content: center; align-items: center;'>
+        <div class='title-container' style='flex: 1; text-align: center; white-space: nowrap; padding: 0 10px; display: flex; justify-content: center; align-items: center;'>
             <h1 style='font-size: 70px; margin: 0; line-height: 1; padding-top: 25px; animation: neon-text 1.5s infinite;'>TERMINAL GME</h1>
         </div>
         <div style='flex: 0 0 180px; display: flex; justify-content: center; align-items: center;'>
