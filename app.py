@@ -48,6 +48,7 @@ components.html(
         const btn = parent.createElement('button');
         btn.id = 'btn-fullscreen';
         btn.innerText = '⛶';
+        // Styles par défaut (Mode Normal : Bas Droite, Grand)
         btn.style.position = 'fixed';
         btn.style.bottom = '70px';
         btn.style.right = '20px';
@@ -100,28 +101,45 @@ st.markdown("""
     @keyframes nuclear-red-img { 0%, 100% { filter: drop-shadow(0 0 0 transparent); } 50% { filter: drop-shadow(0 0 20px #FF0000) drop-shadow(0 0 70px #FF0000) drop-shadow(0 0 150px #FF0000); } }
     @keyframes neon-img { 0%, 100% { filter: drop-shadow(0 0 0px transparent); } 50% { filter: drop-shadow(0 0 25px #00FF00); } }
 
-    /* PAR DÉFAUT (Protège le mode normal et paysage) : Espace invisible, Saut de ligne inactif */
+    /* PAR DÉFAUT (Protège le mode normal et paysage) */
     .mobile-break { display: none; }
     .desktop-space { display: inline; }
 
-    /* --- BOUCLIER V42 : S'ACTIVE UNIQUEMENT EN PORTRAIT ET SI LE BOUTON PLEIN ECRAN A ETE CLIQUÉ --- */
+    /* --- NOUVEAU V43 : CIBLAGE DU BOUTON EN MODE PLEIN ÉCRAN (GLOBAL) --- */
+    /* S'applique dès que 'is-fullscreen' est présent, en portrait OU paysage */
+    body.is-fullscreen #btn-fullscreen {
+        /* Position: Bas Gauche */
+        bottom: 20px !important;
+        left: 20px !important;
+        right: auto !important; /* Annule le style 'right' du JS */
+
+        /* Taille: ~30% plus petit (55px -> 38px, font 30px -> 21px) */
+        width: 38px !important;
+        height: 38px !important;
+        font-size: 21px !important;
+        border-radius: 8px !important; /* Ajustement léger du bord */
+    }
+
+    /* --- BOUCLIER V43 : MODIFICATIONS UNIQUEMENT EN PORTRAIT PLEIN ÉCRAN --- */
     @media screen and (orientation: portrait) {
         body.is-fullscreen .gme-title {
-            font-size: 35px !important; /* Taille réduite de moitié */
-            white-space: normal !important; /* Autorise à passer à la ligne proprement */
-            padding-top: 10px !important;
+            font-size: 35px !important;
+            white-space: normal !important;
+            /* MODIF V43 : Padding top réduit à 0 pour remonter TERMINAL */
+            padding-top: 0px !important; 
             line-height: 1.1 !important;
         }
         body.is-fullscreen .desktop-space {
-            display: none !important; /* Supprime l'espace horizontal collé */
+            display: none !important;
         }
         body.is-fullscreen .mobile-break {
-            display: block !important; /* Active le saut de ligne ! */
-            height: 15px !important; /* Crée l'espace physique VRAI entre TERMINAL et GME */
+            display: block !important;
+            /* MODIF V43 : Hauteur doublée pour un plus grand espace entre les mots */
+            height: 30px !important; 
             content: " ";
         }
         
-        /* ASPIRATION DES MARGES (Remonte l'interface pour voir la signature) */
+        /* ASPIRATION DES MARGES (Inchangé depuis V42) */
         body.is-fullscreen .main .block-container,
         body.is-fullscreen [data-testid="stAppViewBlockContainer"] {
             padding-top: 0px !important; 
@@ -141,7 +159,7 @@ st.markdown("""
 if 'launched' not in st.session_state:
     st.session_state.launched = False
 
-# --- 2. ACCUEIL (HTML RESTAURÉ À LA PERFECTION DU MODE NORMAL) ---
+# --- 2. ACCUEIL ---
 if not st.session_state.launched:
     wen_b64 = get_b64('Screenshot_20260216_163106_Discord.jpg')
     st.markdown(f"""
