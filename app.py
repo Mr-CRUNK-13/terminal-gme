@@ -86,37 +86,36 @@ st.markdown("""
     @keyframes nuclear-red-img { 0%, 100% { filter: drop-shadow(0 0 0 transparent); } 50% { filter: drop-shadow(0 0 20px #FF0000) drop-shadow(0 0 70px #FF0000) drop-shadow(0 0 150px #FF0000); } }
     @keyframes neon-img { 0%, 100% { filter: drop-shadow(0 0 0px transparent); } 50% { filter: drop-shadow(0 0 25px #00FF00); } }
 
-    /* --- CIBLAGE ULTIME V36 : UNIQUEMENT MOBILE PORTRAIT PLEIN ÉCRAN --- */
+    /* Par défaut, le saut de ligne est INVISIBLE */
+    .mobile-break { display: none; }
+
+    /* --- CIBLAGE ULTIME V37 : UNIQUEMENT MOBILE PORTRAIT PLEIN ÉCRAN --- */
     @media screen and (orientation: portrait) and (:fullscreen),
            screen and (orientation: portrait) and (-webkit-full-screen) {
         
-        /* 1. FIX GLOBAL OVERFLOW : Réduire drastiquement le padding vertical de l'app */
+        /* 1. FIX GLOBAL OVERFLOW : Réduire le padding vertical de l'app */
         .main .block-container {
             padding-top: 1rem !important;
             padding-bottom: 1rem !important;
         }
 
-        /* 2. CIBLAGE DU CONTENEUR TITRE VIA LA CLASSE AJOUTÉE */
+        /* 2. Autoriser le wrapping dans le conteneur titre */
         .title-container {
-            /* On autorise le texte à passer à la ligne */
             white-space: normal !important;
-            /* On s'assure que les éléments flexibles peuvent wrapper */
-            flex-wrap: wrap !important;
         }
 
-        /* 3. CIBLAGE ET MODIFICATION DU TITRE H1 */
+        /* 3. MODIFICATION DU H1 : Taille réduite de moitié */
         .title-container h1 {
-            /* Taille réduite */
-            font-size: 40px !important;
-            /* Astuce ultime pour forcer le saut de ligne entre les mots */
-            word-spacing: 9999px !important;
-            /* Centrage */
-            text-align: center !important;
-            line-height: 1.1 !important;
-            padding-top: 5px !important;
-            /* Largeur 100% pour occuper l'espace et permettre le centrage */
-            width: 100% !important;
-            display: block !important;
+            font-size: 35px !important; /* 70px / 2 = 35px */
+            line-height: 1.0 !important;
+            padding-top: 10px !important;
+        }
+
+        /* 4. ACTIVATION DU SAUT DE LIGNE AVEC ESPACE */
+        .title-container h1 .mobile-break {
+            display: block !important; /* Le <br> devient actif */
+            margin-bottom: 15px !important; /* Ajoute l'espace demandé entre TERMINAL et GME */
+            content: " " !important;
         }
     }
 </style>
@@ -125,10 +124,10 @@ st.markdown("""
 if 'launched' not in st.session_state:
     st.session_state.launched = False
 
-# --- 2. ACCUEIL (INTERFACE WEN MOON - Ajout de class='title-container') ---
+# --- 2. ACCUEIL (INTERFACE WEN MOON - V37 avec balise <br> intelligente) ---
 if not st.session_state.launched:
     wen_b64 = get_b64('Screenshot_20260216_163106_Discord.jpg')
-    # SEULE MODIF HTML : Ajout de la classe 'title-container' au div central
+    # MODIFICATION CHIRURGICALE HTML : Ajout de <br class='mobile-break'> entre TERMINAL et GME
     st.markdown(f"""
     <br>
     <div style='display:flex; justify-content:center; align-items:center; width: 100%; margin-bottom: 40px;'>
@@ -136,7 +135,7 @@ if not st.session_state.launched:
             <img src='data:image/jpeg;base64,{wen_b64}' style='height:130px; animation: neon-img 1.5s infinite;'>
         </div>
         <div class='title-container' style='flex: 1; text-align: center; white-space: nowrap; padding: 0 10px; display: flex; justify-content: center; align-items: center;'>
-            <h1 style='font-size: 70px; margin: 0; line-height: 1; padding-top: 25px; animation: neon-text 1.5s infinite;'>TERMINAL GME</h1>
+            <h1 style='font-size: 70px; margin: 0; line-height: 1; padding-top: 25px; animation: neon-text 1.5s infinite;'>TERMINAL<br class='mobile-break'>GME</h1>
         </div>
         <div style='flex: 0 0 180px; display: flex; justify-content: center; align-items: center;'>
             <div style='animation: rocket-pulse 1s ease-in-out infinite;'>
@@ -259,7 +258,7 @@ else:
         ar.text(0.1, 0.70, f"Val: ${v_w_u:,.2f}", color="white", fontsize=63, ha="left", weight="bold")
         ar.text(0.1, 0.55, f"Qty: {qw:,} | Price: ${p_wt:.2f}", color="#00FF00" if pl_w_u>=0 else "#FF0000", fontsize=84, ha="left", weight="bold")
         ar.text(0.1, 0.40, f"Avg Cost: ${pw:.3f}", color="white", fontsize=63, ha="left", weight="bold")
-        ar.text(0.1, 0.25, f"P/L: {pl_w_u:+,.2f} ({pl_w_u/(qw*pw):+.2%})", color="#00FF00" if pl_w_u>=0 else "#FF0000", fontsize=84, ha="left", weight="bold")
+        ar.text(0.1, 0.25, f"P/L: ${pl_w_u:+,.2f} ({pl_w_u/(qw*pw):+.2%})", color="#00FF00" if pl_w_u>=0 else "#FF0000", fontsize=84, ha="left", weight="bold")
         ar.annotate("", xy=(0.08, 0.5), xytext=(-0.19, 0.5), arrowprops=dict(arrowstyle="->", color="#006400", lw=20))
         st.pyplot(fig4)
 
