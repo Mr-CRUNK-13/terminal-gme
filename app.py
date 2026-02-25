@@ -100,44 +100,39 @@ st.markdown("""
     @keyframes nuclear-red-img { 0%, 100% { filter: drop-shadow(0 0 0 transparent); } 50% { filter: drop-shadow(0 0 20px #FF0000) drop-shadow(0 0 70px #FF0000) drop-shadow(0 0 150px #FF0000); } }
     @keyframes neon-img { 0%, 100% { filter: drop-shadow(0 0 0px transparent); } 50% { filter: drop-shadow(0 0 25px #00FF00); } }
 
-    /* STYLES DE BASE (Protège le mode normal et paysage) */
-    .title-text {
-        font-size: 70px !important;
-        margin: 0;
-        line-height: 1;
-        padding-top: 25px;
-        white-space: nowrap !important;
-        animation: neon-text 1.5s infinite;
-    }
-    .word-space {
-        display: inline;
-    }
+    /* PAR DÉFAUT (Protège le mode normal et paysage) : Espace invisible, Saut de ligne inactif */
+    .mobile-break { display: none; }
+    .desktop-space { display: inline; }
 
-    /* --- BOUCLIER V41 : S'ACTIVE UNIQUEMENT EN PORTRAIT ET SI LE BOUTON PLEIN ECRAN A ETE CLIQUÉ --- */
+    /* --- BOUCLIER V42 : S'ACTIVE UNIQUEMENT EN PORTRAIT ET SI LE BOUTON PLEIN ECRAN A ETE CLIQUÉ --- */
     @media screen and (orientation: portrait) {
-        body.is-fullscreen .title-text {
+        body.is-fullscreen .gme-title {
             font-size: 35px !important; /* Taille réduite de moitié */
             white-space: normal !important; /* Autorise à passer à la ligne proprement */
             padding-top: 10px !important;
-            display: block !important;
+            line-height: 1.1 !important;
         }
-        body.is-fullscreen .word-space {
-            display: block !important; /* Casse la ligne ici */
-            height: 15px !important; /* Crée l'espace physique entre TERMINAL et GME */
+        body.is-fullscreen .desktop-space {
+            display: none !important; /* Supprime l'espace horizontal collé */
+        }
+        body.is-fullscreen .mobile-break {
+            display: block !important; /* Active le saut de ligne ! */
+            height: 15px !important; /* Crée l'espace physique VRAI entre TERMINAL et GME */
             content: " ";
         }
         
-        /* LA MODIFICATION CHIRURGICALE EST ICI : ASPIRATION MAXIMALE DE LA MARGE HAUTE */
+        /* ASPIRATION DES MARGES (Remonte l'interface pour voir la signature) */
         body.is-fullscreen .main .block-container,
         body.is-fullscreen [data-testid="stAppViewBlockContainer"] {
             padding-top: 0px !important; 
             padding-bottom: 0px !important; 
-            margin-top: -100px !important; /* ASPIRATION EXTRÊME (-100px) pour écraser tout le vide */
+            margin-top: -80px !important; 
         }
-        
-        /* On réduit aussi la marge sous l'en-tête pour gagner les derniers pixels */
         body.is-fullscreen div[style*='margin-bottom: 40px'] {
             margin-bottom: 10px !important; 
+        }
+        body.is-fullscreen h4 {
+            margin-top: 0px !important; 
         }
     }
 </style>
@@ -146,7 +141,7 @@ st.markdown("""
 if 'launched' not in st.session_state:
     st.session_state.launched = False
 
-# --- 2. ACCUEIL ---
+# --- 2. ACCUEIL (HTML RESTAURÉ À LA PERFECTION DU MODE NORMAL) ---
 if not st.session_state.launched:
     wen_b64 = get_b64('Screenshot_20260216_163106_Discord.jpg')
     st.markdown(f"""
@@ -155,10 +150,8 @@ if not st.session_state.launched:
         <div style='flex: 0 0 180px; display: flex; justify-content: center; align-items: center;'>
             <img src='data:image/jpeg;base64,{wen_b64}' style='height:130px; animation: neon-img 1.5s infinite;'>
         </div>
-        <div style='flex: 1; text-align: center; display: flex; justify-content: center; align-items: center;'>
-            <h1 class='title-text'>
-                <span>TERMINAL</span><span class='word-space'> </span><span>GME</span>
-            </h1>
+        <div style='flex: 1; text-align: center; white-space: nowrap; padding: 0 10px; display: flex; justify-content: center; align-items: center;'>
+            <h1 class='gme-title' style='font-size: 70px; margin: 0; line-height: 1; padding-top: 25px; animation: neon-text 1.5s infinite;'>TERMINAL<span class='desktop-space'> </span><br class='mobile-break'>GME</h1>
         </div>
         <div style='flex: 0 0 180px; display: flex; justify-content: center; align-items: center;'>
             <div style='animation: rocket-pulse 1s ease-in-out infinite;'>
@@ -298,6 +291,6 @@ else:
                 if r == 4 and c not in [0, 4, 5, 6]: cell.set_facecolor("#0f172a"); cell.set_edgecolor("#0f172a"); continue
                 cell.set_facecolor("#0259c7"); cell.get_text().set_color("white"); cell.get_text().set_fontweight('bold')
                 if c in [1, 3, 5]: cell.get_text().set_color("#00FF00"); cell.get_text().set_fontsize(14)
-                elif c == 6: cell.get_text().set_color("#00FF00" if (v_s_u-total_shares*gp if r==1 else v_w_u-qw*pw if r==2 else t_pl_u)>=0 else "#FF0000"); cell.get_text().set_fontsize(14)
+                elif c == 6: cell.get_text().set_color("#00FF00" if (v_s_u-total_shares*gp if r==1 else v_w_u-qw*pw if r==2 else t_pl_u)>=0 else "#ef4444"); cell.get_text().set_fontsize(14)
             else: cell.set_facecolor("#0f172a"); cell.set_edgecolor("#0f172a")
         st.pyplot(fig5)
