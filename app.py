@@ -86,24 +86,21 @@ st.markdown("""
     @keyframes nuclear-red-img { 0%, 100% { filter: drop-shadow(0 0 0 transparent); } 50% { filter: drop-shadow(0 0 20px #FF0000) drop-shadow(0 0 70px #FF0000) drop-shadow(0 0 150px #FF0000); } }
     @keyframes neon-img { 0%, 100% { filter: drop-shadow(0 0 0px transparent); } 50% { filter: drop-shadow(0 0 25px #00FF00); } }
 
-    /* --- NOUVEAU : CIBLAGE PLEIN ÉCRAN VERTICAL (PORTRAIT) UNIQUEMENT --- */
-    /* Le span est invisible par défaut */
-    .mobile-break { display: none; }
-
-    /* Quand on est en plein écran ET en portrait */
+    /* --- CIBLAGE CHIRURGICAL V34 : UNIQUEMENT MOBILE PORTRAIT PLEIN ÉCRAN --- */
     @media screen and (orientation: portrait) and (:fullscreen),
            screen and (orientation: portrait) and (-webkit-full-screen) {
-        /* On réduit drastiquement la taille du titre H1 */
-        .stMarkdown h1 {
-            font-size: 40px !important;
-            line-height: 1.2 !important;
-            padding-top: 10px !important;
+        
+        /* 1. On autorise le conteneur du texte à revenir à la ligne (annule le nowrap) */
+        /* Cible le 2ème div enfant (celui du texte) dans le conteneur flex principal */
+        .stMarkdown div[style*='display:flex'] > div:nth-child(2) {
+             white-space: normal !important;
         }
-        /* On transforme le span en saut de ligne avec marge */
-        .mobile-break {
-            display: block !important;
-            margin-top: 15px;
-            content: " ";
+
+        /* 2. On réduit la taille du titre H1 et on ajuste l'interligne */
+        .stMarkdown h1 {
+            font-size: 35px !important; /* Taille adaptée au portrait */
+            line-height: 1.1 !important; /* Espace entre TERMINAL et GME */
+            padding-top: 15px !important; /* Réajustement vertical */
         }
     }
 </style>
@@ -112,10 +109,10 @@ st.markdown("""
 if 'launched' not in st.session_state:
     st.session_state.launched = False
 
-# --- 2. ACCUEIL (INTERFACE WEN MOON) ---
+# --- 2. ACCUEIL (INTERFACE WEN MOON - Retour au HTML V32 pur) ---
 if not st.session_state.launched:
     wen_b64 = get_b64('Screenshot_20260216_163106_Discord.jpg')
-    # MODIFICATION ICI : Ajout du span 'mobile-break' invisible entre TERMINAL et GME
+    # LE HTML EST RESTAURÉ À L'IDENTIQUE DE LA V32 - AUCUNE MODIFICATION ICI
     st.markdown(f"""
     <br>
     <div style='display:flex; justify-content:center; align-items:center; width: 100%; margin-bottom: 40px;'>
@@ -123,7 +120,7 @@ if not st.session_state.launched:
             <img src='data:image/jpeg;base64,{wen_b64}' style='height:130px; animation: neon-img 1.5s infinite;'>
         </div>
         <div style='flex: 1; text-align: center; white-space: nowrap; padding: 0 10px; display: flex; justify-content: center; align-items: center;'>
-            <h1 style='font-size: 70px; margin: 0; line-height: 1; padding-top: 25px; animation: neon-text 1.5s infinite;'>TERMINAL<span class='mobile-break'></span>GME</h1>
+            <h1 style='font-size: 70px; margin: 0; line-height: 1; padding-top: 25px; animation: neon-text 1.5s infinite;'>TERMINAL GME</h1>
         </div>
         <div style='flex: 0 0 180px; display: flex; justify-content: center; align-items: center;'>
             <div style='animation: rocket-pulse 1s ease-in-out infinite;'>
