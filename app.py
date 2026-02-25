@@ -86,21 +86,21 @@ st.markdown("""
     @keyframes nuclear-red-img { 0%, 100% { filter: drop-shadow(0 0 0 transparent); } 50% { filter: drop-shadow(0 0 20px #FF0000) drop-shadow(0 0 70px #FF0000) drop-shadow(0 0 150px #FF0000); } }
     @keyframes neon-img { 0%, 100% { filter: drop-shadow(0 0 0px transparent); } 50% { filter: drop-shadow(0 0 25px #00FF00); } }
 
-    /* --- CIBLAGE CHIRURGICAL V34 : UNIQUEMENT MOBILE PORTRAIT PLEIN ÉCRAN --- */
+    /* --- CIBLAGE CHIRURGICAL V35 : UNIQUEMENT MOBILE PORTRAIT PLEIN ÉCRAN --- */
     @media screen and (orientation: portrait) and (:fullscreen),
            screen and (orientation: portrait) and (-webkit-full-screen) {
         
-        /* 1. On autorise le conteneur du texte à revenir à la ligne (annule le nowrap) */
-        /* Cible le 2ème div enfant (celui du texte) dans le conteneur flex principal */
-        .stMarkdown div[style*='display:flex'] > div:nth-child(2) {
-             white-space: normal !important;
-        }
+        /* Ciblage précis du H1 dans le conteneur central de l'accueil */
+        .stMarkdown div[style*='flex: 1; text-align: center'] h1 {
+            /* 1. Réduction drastique de la taille pour que ça rentre dans l'écran */
+            font-size: 32px !important;
 
-        /* 2. On réduit la taille du titre H1 et on ajuste l'interligne */
-        .stMarkdown h1 {
-            font-size: 35px !important; /* Taille adaptée au portrait */
-            line-height: 1.1 !important; /* Espace entre TERMINAL et GME */
-            padding-top: 15px !important; /* Réajustement vertical */
+            /* 2. Ajout d'un très grand espace (30px) entre les mots TERMINAL et GME */
+            word-spacing: 30px !important;
+
+            /* 3. Réajustement de l'alignement vertical suite au changement de taille */
+            line-height: 1.4 !important;
+            padding-top: 15px !important;
         }
     }
 </style>
@@ -109,10 +109,10 @@ st.markdown("""
 if 'launched' not in st.session_state:
     st.session_state.launched = False
 
-# --- 2. ACCUEIL (INTERFACE WEN MOON - Retour au HTML V32 pur) ---
+# --- 2. ACCUEIL (INTERFACE WEN MOON - HTML STRICTEMENT V32) ---
 if not st.session_state.launched:
     wen_b64 = get_b64('Screenshot_20260216_163106_Discord.jpg')
-    # LE HTML EST RESTAURÉ À L'IDENTIQUE DE LA V32 - AUCUNE MODIFICATION ICI
+    # HTML IDENTIQUE À LA VERSION PARFAITE PRECEDENTE
     st.markdown(f"""
     <br>
     <div style='display:flex; justify-content:center; align-items:center; width: 100%; margin-bottom: 40px;'>
@@ -260,6 +260,6 @@ else:
                 if r == 4 and c not in [0, 4, 5, 6]: cell.set_facecolor("#0f172a"); cell.set_edgecolor("#0f172a"); continue
                 cell.set_facecolor("#0259c7"); cell.get_text().set_color("white"); cell.get_text().set_fontweight('bold')
                 if c in [1, 3, 5]: cell.get_text().set_color("#00FF00"); cell.get_text().set_fontsize(14)
-                elif c == 6: cell.get_text().set_color("#00FF00" if (v_s_u-total_shares*gp if r==1 else v_w_u-qw*pw if r==2 else t_pl_u)>=0 else "#FF0000"); cell.get_text().set_fontsize(14)
+                elif c == 6: cell.get_text().set_color("#00FF00" if (v_s_u-total_shares*gp if r==1 else v_w_u-qw*pw if r==2 else t_pl_u)>=0 else "#ef4444"); cell.get_text().set_fontsize(14)
             else: cell.set_facecolor("#0f172a"); cell.set_edgecolor("#0f172a")
         st.pyplot(fig5)
