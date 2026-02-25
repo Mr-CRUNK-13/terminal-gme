@@ -113,7 +113,7 @@ st.markdown("""
         display: inline;
     }
 
-    /* --- BOUCLIER V40 : S'ACTIVE UNIQUEMENT EN PORTRAIT ET SI LE BOUTON PLEIN ECRAN A ETE CLIQUÉ --- */
+    /* --- BOUCLIER V41 : S'ACTIVE UNIQUEMENT EN PORTRAIT ET SI LE BOUTON PLEIN ECRAN A ETE CLIQUÉ --- */
     @media screen and (orientation: portrait) {
         body.is-fullscreen .title-text {
             font-size: 35px !important; /* Taille réduite de moitié */
@@ -127,12 +127,12 @@ st.markdown("""
             content: " ";
         }
         
-        /* LA MODIFICATION CHIRURGICALE EST ICI : ASPIRATION DE LA MARGE HAUTE */
+        /* LA MODIFICATION CHIRURGICALE EST ICI : ASPIRATION MAXIMALE DE LA MARGE HAUTE */
         body.is-fullscreen .main .block-container,
         body.is-fullscreen [data-testid="stAppViewBlockContainer"] {
             padding-top: 0px !important; 
             padding-bottom: 0px !important; 
-            margin-top: -60px !important; /* Force tout le bloc à remonter, écrasant la marge fantôme */
+            margin-top: -100px !important; /* ASPIRATION EXTRÊME (-100px) pour écraser tout le vide */
         }
         
         /* On réduit aussi la marge sous l'en-tête pour gagner les derniers pixels */
@@ -298,6 +298,6 @@ else:
                 if r == 4 and c not in [0, 4, 5, 6]: cell.set_facecolor("#0f172a"); cell.set_edgecolor("#0f172a"); continue
                 cell.set_facecolor("#0259c7"); cell.get_text().set_color("white"); cell.get_text().set_fontweight('bold')
                 if c in [1, 3, 5]: cell.get_text().set_color("#00FF00"); cell.get_text().set_fontsize(14)
-                elif c == 6: cell.get_text().set_color("#00FF00" if (v_s_u-total_shares*gp if r==1 else v_w_u-qw*pw if r==2 else t_pl_u)>=0 else "#ef4444"); cell.get_text().set_fontsize(14)
+                elif c == 6: cell.get_text().set_color("#00FF00" if (v_s_u-total_shares*gp if r==1 else v_w_u-qw*pw if r==2 else t_pl_u)>=0 else "#FF0000"); cell.get_text().set_fontsize(14)
             else: cell.set_facecolor("#0f172a"); cell.set_edgecolor("#0f172a")
         st.pyplot(fig5)
