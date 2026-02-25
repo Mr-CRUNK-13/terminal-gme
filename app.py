@@ -105,41 +105,38 @@ st.markdown("""
     .mobile-break { display: none; }
     .desktop-space { display: inline; }
 
-    /* --- NOUVEAU V43 : CIBLAGE DU BOUTON EN MODE PLEIN ÉCRAN (GLOBAL) --- */
-    /* S'applique dès que 'is-fullscreen' est présent, en portrait OU paysage */
+    /* CIBLAGE DU BOUTON EN MODE PLEIN ÉCRAN (Parfait) */
     body.is-fullscreen #btn-fullscreen {
-        /* Position: Bas Gauche */
         bottom: 20px !important;
         left: 20px !important;
-        right: auto !important; /* Annule le style 'right' du JS */
-
-        /* Taille: ~30% plus petit (55px -> 38px, font 30px -> 21px) */
+        right: auto !important;
         width: 38px !important;
         height: 38px !important;
         font-size: 21px !important;
-        border-radius: 8px !important; /* Ajustement léger du bord */
+        border-radius: 8px !important;
     }
 
-    /* --- BOUCLIER V43 : MODIFICATIONS UNIQUEMENT EN PORTRAIT PLEIN ÉCRAN --- */
+    /* --- BOUCLIER V44 : MODIFICATIONS UNIQUEMENT EN PORTRAIT PLEIN ÉCRAN --- */
     @media screen and (orientation: portrait) {
         body.is-fullscreen .gme-title {
             font-size: 35px !important;
             white-space: normal !important;
-            /* MODIF V43 : Padding top réduit à 0 pour remonter TERMINAL */
             padding-top: 0px !important; 
             line-height: 1.1 !important;
         }
-        body.is-fullscreen .desktop-space {
-            display: none !important;
-        }
-        body.is-fullscreen .mobile-break {
-            display: block !important;
-            /* MODIF V43 : Hauteur doublée pour un plus grand espace entre les mots */
-            height: 30px !important; 
-            content: " ";
+        body.is-fullscreen .desktop-space { display: none !important; }
+        
+        /* LA CORRECTION ULTIME EST ICI : ESPACEMENT GARANTI */
+        body.is-fullscreen .mobile-break { display: none !important; } /* On cache l'ancien <br> inutile */
+        
+        /* On injecte un bloc invisible de 30px juste après le mot TERMINAL */
+        body.is-fullscreen .terminal-word::after {
+            content: "" !important;
+            display: block !important; /* Force le retour à la ligne */
+            height: 30px !important;   /* Force l'espace vertical exact */
         }
         
-        /* ASPIRATION DES MARGES (Inchangé depuis V42) */
+        /* ASPIRATION DES MARGES (Parfait, ne pas toucher) */
         body.is-fullscreen .main .block-container,
         body.is-fullscreen [data-testid="stAppViewBlockContainer"] {
             padding-top: 0px !important; 
@@ -162,6 +159,7 @@ if 'launched' not in st.session_state:
 # --- 2. ACCUEIL ---
 if not st.session_state.launched:
     wen_b64 = get_b64('Screenshot_20260216_163106_Discord.jpg')
+    # AJOUT DU SPAN 'terminal-word' POUR LE CIBLAGE CSS V44
     st.markdown(f"""
     <br>
     <div style='display:flex; justify-content:center; align-items:center; width: 100%; margin-bottom: 40px;'>
@@ -169,7 +167,7 @@ if not st.session_state.launched:
             <img src='data:image/jpeg;base64,{wen_b64}' style='height:130px; animation: neon-img 1.5s infinite;'>
         </div>
         <div style='flex: 1; text-align: center; white-space: nowrap; padding: 0 10px; display: flex; justify-content: center; align-items: center;'>
-            <h1 class='gme-title' style='font-size: 70px; margin: 0; line-height: 1; padding-top: 25px; animation: neon-text 1.5s infinite;'>TERMINAL<span class='desktop-space'> </span><br class='mobile-break'>GME</h1>
+            <h1 class='gme-title' style='font-size: 70px; margin: 0; line-height: 1; padding-top: 25px; animation: neon-text 1.5s infinite;'><span class='terminal-word'>TERMINAL</span><span class='desktop-space'> </span><br class='mobile-break'>GME</h1>
         </div>
         <div style='flex: 0 0 180px; display: flex; justify-content: center; align-items: center;'>
             <div style='animation: rocket-pulse 1s ease-in-out infinite;'>
