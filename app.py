@@ -85,10 +85,15 @@ components.html(
     width=0,
 )
 
-def get_b64(path):
-    try:
-        with open(path, "rb") as f: return base64.b64encode(f.read()).decode()
-    except: return ""
+# --- FORCE FAVICON CHROME (HACK ANTI-CACHE) ---
+wen_ico = get_b64("Screenshot_20260216_163106_Discord.jpg")
+if wen_ico:
+    components.html(f"""<script>
+        const link = window.parent.document.querySelector("link[rel~='icon']") || window.parent.document.createElement('link');
+        link.rel = 'icon';
+        link.href = "data:image/jpeg;base64,{wen_ico}";
+        window.parent.document.head.appendChild(link);
+    </script>""", height=0, width=0)
 
 st.markdown("""
 <style>
